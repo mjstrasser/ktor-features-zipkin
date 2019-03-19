@@ -1,0 +1,33 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+}
+
+apply plugin: 'kotlin'
+apply plugin: 'application'
+
+sourceSets {
+    main.kotlin.srcDirs = [ 'src' ]
+    test.kotlin.srcDirs = [ 'test' ]
+    main.resources.srcDirs = [ 'resources' ]
+}
+
+repositories {
+    jcenter()
+    maven { url "https://dl.bintray.com/kotlin/ktor" }
+}
+
+dependencies {
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+    compile "io.ktor:ktor-server-core:$ktor_version"
+
+    testCompile "org.junit.jupiter:junit-jupiter-api:5.4.0"
+    testRuntime "org.junit.jupiter:junit-jupiter-engine:5.4.0"
+    testCompile "io.ktor:ktor-server-tests:$ktor_version"
+    testCompile "com.willowtreeapps.assertk:assertk-jvm:0.13"
+}
+
