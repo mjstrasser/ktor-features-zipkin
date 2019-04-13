@@ -1,4 +1,4 @@
-package mjs.kotlin.features
+package mjs.ktor.features.zipkin
 
 import io.ktor.client.HttpClient
 import io.ktor.client.features.HttpClientFeature

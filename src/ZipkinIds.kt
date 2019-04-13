@@ -1,4 +1,4 @@
-package mjs.kotlin.features
+package mjs.ktor.features.zipkin
 
 import io.ktor.application.ApplicationCall
 import io.ktor.application.ApplicationCallPipeline
@@ -11,7 +11,7 @@ import io.ktor.response.ApplicationResponse
 import io.ktor.response.header
 import io.ktor.util.AttributeKey
 import io.ktor.util.pipeline.PipelinePhase
-import mjs.kotlin.features.ZipkinIds.Configuration
+import mjs.ktor.features.zipkin.ZipkinIds.Configuration
 import kotlin.random.Random
 
 const val B3_HEADER = "b3"

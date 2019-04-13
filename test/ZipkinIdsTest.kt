@@ -1,4 +1,4 @@
-package mjs.kotlin.features
+package mjs.ktor.features.zipkin
 
 import assertk.assertThat
 import assertk.assertions.*
@@ -6,7 +6,7 @@ import io.ktor.application.install
 import io.ktor.http.HttpMethod
 import io.ktor.server.testing.handleRequest
 import io.ktor.server.testing.withTestApplication
-import mjs.kotlin.features.ZipkinIds.Feature.traceAndSpanKey
+import mjs.ktor.features.zipkin.ZipkinIds.Feature.traceAndSpanKey
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
