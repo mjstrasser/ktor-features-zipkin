@@ -68,14 +68,14 @@ class ZipkinIds {
      */
     companion object Feature : ApplicationFeature<ApplicationCallPipeline, Configuration, ZipkinIds> {
 
+        val traceAndSpanKey = AttributeKey<TraceAndSpan>("traceAndSpan")
+
         override val key = AttributeKey<ZipkinIds>("ZipkinIds")
 
         /**
          * Phase of [ApplicationCallPipeline] into which the feature is installed.
          */
         private val phase: PipelinePhase = PipelinePhase("ZipkinIds")
-
-        internal val traceAndSpanKey = AttributeKey<TraceAndSpan>("traceAndSpan")
 
         override fun install(pipeline: ApplicationCallPipeline, configure: Configuration.() -> Unit): ZipkinIds {
             val configuration = Configuration().apply(configure)
@@ -85,8 +85,8 @@ class ZipkinIds {
             pipeline.intercept(phase) {
                 val call = call // Copied from ktor code: not sure why we do this
                 val traceAndSpan = readIdsFromRequest(call.request.headers) ?: generateIdsOnPathMatch(
-                        call.request.path(),
-                        configuration
+                    call.request.path(),
+                    configuration
                 )
                 if (traceAndSpan != null) {
                     call.attributes.put(traceAndSpanKey, traceAndSpan)
@@ -110,22 +110,22 @@ class ZipkinIds {
             } else null
         }
 
-        private fun generateIdsOnPathMatch(path: String, configuration: ZipkinIds.Configuration) =
-                if (foundPrefixMatch(path, configuration.initiateTracePathPrefixes)) {
-                    TraceAndSpan(configuration.b3Header, nextId(configuration.idLength), nextId())
-                } else null
+        private fun generateIdsOnPathMatch(path: String, configuration: Configuration) =
+            if (foundPrefixMatch(path, configuration.initiateTracePathPrefixes)) {
+                TraceAndSpan(configuration.b3Header, nextId(configuration.idLength), nextId())
+            } else null
 
         private fun foundPrefixMatch(path: String, prefixes: Array<String>) =
-                prefixes.map { prefix -> path.startsWith(prefix) }
-                        .fold(false) { acc, startsWith -> acc || startsWith }
+            prefixes.map { prefix -> path.startsWith(prefix) }
+                .fold(false) { acc, startsWith -> acc || startsWith }
 
         private fun setHeaders(response: ApplicationResponse, traceAndSpan: TraceAndSpan) =
-                if (traceAndSpan.b3Header) {
-                    response.header(B3_HEADER, "${traceAndSpan.traceId}-${traceAndSpan.spanId}")
-                } else {
-                    response.header(TRACE_ID_HEADER, traceAndSpan.traceId)
-                    response.header(SPAN_ID_HEADER, traceAndSpan.spanId)
-                }
+            if (traceAndSpan.b3Header) {
+                response.header(B3_HEADER, "${traceAndSpan.traceId}-${traceAndSpan.spanId}")
+            } else {
+                response.header(TRACE_ID_HEADER, traceAndSpan.traceId)
+                response.header(SPAN_ID_HEADER, traceAndSpan.spanId)
+            }
     }
 }
 

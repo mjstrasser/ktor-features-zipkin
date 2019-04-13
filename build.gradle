@@ -11,7 +11,7 @@ apply plugin: 'kotlin'
 apply plugin: 'maven'
 
 group 'com.michaelstrasser'
-version '0.0.1'
+version '0.0.5'
 
 sourceSets {
     main.kotlin.srcDirs = [ 'src' ]
@@ -26,6 +26,8 @@ repositories {
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     compile "io.ktor:ktor-server-core:$ktor_version"
+    compile "io.ktor:ktor-client-core:$ktor_version"
+    compile "io.ktor:ktor-client-core-jvm:$ktor_version"
 
     testCompile "org.junit.jupiter:junit-jupiter-api:5.4.0"
     testRuntime "org.junit.jupiter:junit-jupiter-engine:5.4.0"
