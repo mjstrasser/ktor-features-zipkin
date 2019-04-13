@@ -28,7 +28,7 @@ class ClientIds(val traceAndSpan: TraceAndSpan) {
 
         private fun setHeaders(headers: HeadersBuilder, traceAndSpan: TraceAndSpan) {
             if (traceAndSpan.b3Header) {
-                headers.append(B3_HEADER, "${traceAndSpan.traceId}-${traceAndSpan.spanId}")
+                headers.append(B3_HEADER, "${traceAndSpan.traceId}-${nextId()}")
             } else {
                 headers.append(TRACE_ID_HEADER, traceAndSpan.traceId)
                 headers.append(SPAN_ID_HEADER, nextId())
