@@ -6,12 +6,12 @@ import io.ktor.client.request.HttpRequestPipeline
 import io.ktor.http.HeadersBuilder
 import io.ktor.util.AttributeKey
 
-class ClientIds(val traceAndSpan: TraceAndSpan) {
+class ClientIds(val tracingParts: TracingParts) {
 
     class Configuration {
-        lateinit var traceAndSpan: TraceAndSpan
+        lateinit var tracingParts: TracingParts
 
-        internal fun build(): ClientIds = ClientIds(traceAndSpan)
+        internal fun build(): ClientIds = ClientIds(tracingParts)
     }
 
     companion object Feature : HttpClientFeature<Configuration, ClientIds> {
@@ -22,15 +22,15 @@ class ClientIds(val traceAndSpan: TraceAndSpan) {
 
         override fun install(feature: ClientIds, scope: HttpClient) {
             scope.requestPipeline.intercept(HttpRequestPipeline.State) {
-                setHeaders(context.headers, feature.traceAndSpan)
+                setHeaders(context.headers, feature.tracingParts)
             }
         }
 
-        private fun setHeaders(headers: HeadersBuilder, traceAndSpan: TraceAndSpan) {
-            if (traceAndSpan.b3Header) {
-                headers.append(B3_HEADER, "${traceAndSpan.traceId}-${nextId()}")
+        private fun setHeaders(headers: HeadersBuilder, tracingParts: TracingParts) {
+            if (tracingParts.b3Header) {
+                headers.append(B3_HEADER, "${tracingParts.traceId}-${nextId()}")
             } else {
-                headers.append(TRACE_ID_HEADER, traceAndSpan.traceId)
+//                headers.append(TRACE_ID_HEADER, tracingParts.traceId)
                 headers.append(SPAN_ID_HEADER, nextId())
             }
         }

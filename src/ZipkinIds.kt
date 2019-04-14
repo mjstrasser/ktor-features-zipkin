@@ -14,11 +14,6 @@ import io.ktor.util.pipeline.PipelinePhase
 import mjs.ktor.features.zipkin.ZipkinIds.Configuration
 import kotlin.random.Random
 
-const val B3_HEADER = "b3"
-const val TRACE_ID_HEADER = "X-B3-TraceId"
-const val SPAN_ID_HEADER = "X-B3-SpanId"
-const val PARENT_SPAN_ID_HEADER = "X-B3-ParentSpanId"
-
 private val prng = Random(System.nanoTime())
 
 enum class IdLength { ID_64_BITS, ID_128_BITS }
@@ -27,8 +22,6 @@ fun nextId(idLength: IdLength = IdLength.ID_64_BITS) = when (idLength) {
     IdLength.ID_64_BITS -> String.format("%016x", prng.nextLong())
     IdLength.ID_128_BITS -> String.format("%016x%016x", prng.nextLong(), prng.nextLong())
 }
-
-data class TraceAndSpan(val b3Header: Boolean, val traceId: String, val spanId: String)
 
 /**
  * Ktor feature that handles Zipkin headers for trace ID and span ID. It behaves similarly to
@@ -68,7 +61,7 @@ class ZipkinIds {
      */
     companion object Feature : ApplicationFeature<ApplicationCallPipeline, Configuration, ZipkinIds> {
 
-        val traceAndSpanKey = AttributeKey<TraceAndSpan>("traceAndSpan")
+        val traceAndSpanKey = AttributeKey<TracingParts>("tracingParts")
 
         override val key = AttributeKey<ZipkinIds>("ZipkinIds")
 
@@ -97,42 +90,42 @@ class ZipkinIds {
             return instance
         }
 
-        private fun readIdsFromRequest(headers: Headers): TraceAndSpan? {
+        private fun readIdsFromRequest(headers: Headers): TracingParts? {
             val b3 = headers[B3_HEADER]
             if (b3 != null) {
                 val ids = b3.split("-")
-                return TraceAndSpan(true, ids[0], ids[1])
+                return TracingParts(true, ids[0], ids[1])
             }
             val traceId = headers[TRACE_ID_HEADER]
             val spanId = headers[SPAN_ID_HEADER]
             return if (traceId != null && spanId != null) {
-                TraceAndSpan(false, traceId, spanId)
+                TracingParts(false, traceId, spanId)
             } else null
         }
 
         private fun generateIdsOnPathMatch(path: String, configuration: Configuration) =
             if (foundPrefixMatch(path, configuration.initiateTracePathPrefixes)) {
-                TraceAndSpan(configuration.b3Header, nextId(configuration.idLength), nextId())
+                TracingParts(configuration.b3Header, nextId(configuration.idLength), nextId())
             } else null
 
         private fun foundPrefixMatch(path: String, prefixes: Array<String>) =
             prefixes.map { prefix -> path.startsWith(prefix) }
                 .fold(false) { acc, startsWith -> acc || startsWith }
 
-        private fun setHeaders(response: ApplicationResponse, traceAndSpan: TraceAndSpan) =
-            if (traceAndSpan.b3Header) {
-                response.header(B3_HEADER, "${traceAndSpan.traceId}-${traceAndSpan.spanId}")
+        private fun setHeaders(response: ApplicationResponse, tracingParts: TracingParts) =
+            if (tracingParts.b3Header) {
+                response.header(B3_HEADER, "${tracingParts.traceId}-${tracingParts.spanId}")
             } else {
-                response.header(TRACE_ID_HEADER, traceAndSpan.traceId)
-                response.header(SPAN_ID_HEADER, traceAndSpan.spanId)
+//                response.header(TRACE_ID_HEADER, tracingParts.traceId)
+//                response.header(SPAN_ID_HEADER, tracingParts.spanId)
             }
     }
 }
 
 /**
- * A [TraceAndSpan] that is retrieved or or set by [ZipkinIds] feature or `null`.
+ * A [TracingParts] that is retrieved or or set by [ZipkinIds] feature or `null`.
  */
-val ApplicationCall.traceAndSpan: TraceAndSpan? get() = attributes.getOrNull(ZipkinIds.traceAndSpanKey)
+val ApplicationCall.tracingParts: TracingParts? get() = attributes.getOrNull(ZipkinIds.traceAndSpanKey)
 
 /**
  * Keys for Slf4j MDC.
@@ -144,6 +137,6 @@ const val SPAN_ID_KEY = "spanId"
  * Put the Zipkin IDs into the logging MDC.
  */
 fun CallLogging.Configuration.zipkinMdc() {
-    mdc(TRACE_ID_KEY) { it.traceAndSpan?.traceId }
-    mdc(SPAN_ID_KEY) { it.traceAndSpan?.spanId }
+    mdc(TRACE_ID_KEY) { it.tracingParts?.traceId }
+    mdc(SPAN_ID_KEY) { it.tracingParts?.spanId }
 }
