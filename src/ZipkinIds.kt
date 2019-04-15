@@ -14,13 +14,13 @@ import io.ktor.util.pipeline.PipelinePhase
 import mjs.ktor.features.zipkin.ZipkinIds.Configuration
 import kotlin.random.Random
 
-private val prng = Random(System.nanoTime())
+private val random = Random(System.nanoTime())
 
 enum class IdLength { ID_64_BITS, ID_128_BITS }
 
 fun nextId(idLength: IdLength = IdLength.ID_64_BITS) = when (idLength) {
-    IdLength.ID_64_BITS -> String.format("%016x", prng.nextLong())
-    IdLength.ID_128_BITS -> String.format("%016x%016x", prng.nextLong(), prng.nextLong())
+    IdLength.ID_64_BITS -> String.format("%016x", random.nextLong())
+    IdLength.ID_128_BITS -> String.format("%016x%016x", random.nextLong(), random.nextLong())
 }
 
 /**
@@ -61,7 +61,7 @@ class ZipkinIds {
      */
     companion object Feature : ApplicationFeature<ApplicationCallPipeline, Configuration, ZipkinIds> {
 
-        val traceAndSpanKey = AttributeKey<TracingParts>("tracingParts")
+        val tracingPartsKey = AttributeKey<TracingParts>("tracingParts")
 
         override val key = AttributeKey<ZipkinIds>("ZipkinIds")
 
@@ -82,7 +82,7 @@ class ZipkinIds {
                     configuration
                 )
                 if (traceAndSpan != null) {
-                    call.attributes.put(traceAndSpanKey, traceAndSpan)
+                    call.attributes.put(tracingPartsKey, traceAndSpan)
                     setHeaders(call.response, traceAndSpan)
                 }
             }
@@ -112,20 +112,18 @@ class ZipkinIds {
             prefixes.map { prefix -> path.startsWith(prefix) }
                 .fold(false) { acc, startsWith -> acc || startsWith }
 
-        private fun setHeaders(response: ApplicationResponse, tracingParts: TracingParts) =
-            if (tracingParts.b3Header) {
-                response.header(B3_HEADER, "${tracingParts.traceId}-${tracingParts.spanId}")
-            } else {
-//                response.header(TRACE_ID_HEADER, tracingParts.traceId)
-//                response.header(SPAN_ID_HEADER, tracingParts.spanId)
+        private fun setHeaders(response: ApplicationResponse, tracingParts: TracingParts) {
+            tracingParts.asHeaders().forEach { (name, value) ->
+                response.header(name, value)
             }
+        }
     }
 }
 
 /**
  * A [TracingParts] that is retrieved or or set by [ZipkinIds] feature or `null`.
  */
-val ApplicationCall.tracingParts: TracingParts? get() = attributes.getOrNull(ZipkinIds.traceAndSpanKey)
+val ApplicationCall.tracingParts: TracingParts? get() = attributes.getOrNull(ZipkinIds.tracingPartsKey)
 
 /**
  * Keys for Slf4j MDC.

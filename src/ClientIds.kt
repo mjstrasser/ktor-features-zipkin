@@ -27,13 +27,10 @@ class ClientIds(val tracingParts: TracingParts) {
         }
 
         private fun setHeaders(headers: HeadersBuilder, tracingParts: TracingParts) {
-            if (tracingParts.b3Header) {
-                headers.append(B3_HEADER, "${tracingParts.traceId}-${nextId()}")
-            } else {
-//                headers.append(TRACE_ID_HEADER, tracingParts.traceId)
-                headers.append(SPAN_ID_HEADER, nextId())
+            tracingParts.asHeaders().forEach { (name, value) ->
+                headers.append(name, value)
             }
         }
-
     }
+
 }

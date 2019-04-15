@@ -6,7 +6,7 @@ import io.ktor.application.install
 import io.ktor.http.HttpMethod
 import io.ktor.server.testing.handleRequest
 import io.ktor.server.testing.withTestApplication
-import mjs.ktor.features.zipkin.ZipkinIds.Feature.traceAndSpanKey
+import mjs.ktor.features.zipkin.ZipkinIds.Feature.tracingPartsKey
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
@@ -32,20 +32,20 @@ internal class ZipkinIdsTest {
         @Test
         fun `should initiate a trace if the path starts with a specified prefix`(): Unit = withTestApplication {
             application.install(ZipkinIds) {
-                initiateTracePathPrefixes = kotlin.arrayOf("/api")
+                initiateTracePathPrefixes = arrayOf("/api")
             }
             handleRequest(HttpMethod.Post, "/api/v1/premium-sms").apply {
-                assertThat(request.call.attributes.contains(traceAndSpanKey)).isTrue()
+                assertThat(request.call.attributes.contains(tracingPartsKey)).isTrue()
             }
         }
 
         @Test
         fun `should not initiate a trace if the path does not start a specified prefix`(): Unit = withTestApplication {
             application.install(ZipkinIds) {
-                initiateTracePathPrefixes = kotlin.arrayOf("/api")
+                initiateTracePathPrefixes = arrayOf("/api")
             }
             handleRequest(HttpMethod.Get, "/health").apply {
-                assertThat(request.call.attributes.contains(traceAndSpanKey)).isFalse()
+                assertThat(request.call.attributes.contains(tracingPartsKey)).isFalse()
             }
         }
     }
@@ -98,31 +98,31 @@ internal class ZipkinIdsTest {
         inner class HeaderTypeConfiguration {
             @Test
             fun `should set new X-B3- headers if b3 not configured and there are no tracing headers in request`(): Unit =
-                    withTestApplication {
-                        application.install(ZipkinIds)
-                        handleRequest(HttpMethod.Get, "/").apply {
-                            with(response.headers) {
-                                assertThat(contains(TRACE_ID_HEADER)).isTrue()
-                                assertThat(contains(SPAN_ID_HEADER)).isTrue()
-                                assertThat(contains(B3_HEADER)).isFalse()
-                            }
+                withTestApplication {
+                    application.install(ZipkinIds)
+                    handleRequest(HttpMethod.Get, "/").apply {
+                        with(response.headers) {
+                            assertThat(contains(TRACE_ID_HEADER)).isTrue()
+                            assertThat(contains(SPAN_ID_HEADER)).isTrue()
+                            assertThat(contains(B3_HEADER)).isFalse()
                         }
                     }
+                }
 
             @Test
             fun `should set new b3 headers if b3 is configured and there are no tracing headers in request`(): Unit =
-                    withTestApplication {
-                        application.install(ZipkinIds) {
-                            b3Header = true
-                        }
-                        handleRequest(HttpMethod.Get, "/").apply {
-                            with(response.headers) {
-                                assertThat(contains(TRACE_ID_HEADER)).isFalse()
-                                assertThat(contains(SPAN_ID_HEADER)).isFalse()
-                                assertThat(contains(B3_HEADER)).isTrue()
-                            }
+                withTestApplication {
+                    application.install(ZipkinIds) {
+                        b3Header = true
+                    }
+                    handleRequest(HttpMethod.Get, "/").apply {
+                        with(response.headers) {
+                            assertThat(contains(TRACE_ID_HEADER)).isFalse()
+                            assertThat(contains(SPAN_ID_HEADER)).isFalse()
+                            assertThat(contains(B3_HEADER)).isTrue()
                         }
                     }
+                }
 
         }
     }
@@ -132,7 +132,7 @@ internal class ZipkinIdsTest {
         @Test
         fun `should not be set if the feature is not installed`(): Unit = withTestApplication {
             handleRequest(HttpMethod.Get, "/").apply {
-                assertThat(request.call.attributes.getOrNull(traceAndSpanKey)).isNull()
+                assertThat(request.call.attributes.getOrNull(tracingPartsKey)).isNull()
             }
         }
 
@@ -145,9 +145,9 @@ internal class ZipkinIdsTest {
                 addHeader(TRACE_ID_HEADER, traceId)
                 addHeader(SPAN_ID_HEADER, spanId)
             }.apply {
-                with(request.call.attributes[traceAndSpanKey]) {
-                    assertk.assertThat(this.traceId).isEqualTo(traceId)
-                    assertk.assertThat(this.spanId).isEqualTo(spanId)
+                with(request.call.attributes[tracingPartsKey]) {
+                    assertThat(this.traceId).isEqualTo(traceId)
+                    assertThat(this.spanId).isEqualTo(spanId)
                 }
             }
         }
