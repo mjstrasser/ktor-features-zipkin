@@ -91,16 +91,8 @@ class ZipkinIds {
         }
 
         private fun readIdsFromRequest(headers: Headers): TracingParts? {
-            val b3 = headers[B3_HEADER]
-            if (b3 != null) {
-                val ids = b3.split("-")
-                return TracingParts(true, ids[0], ids[1])
-            }
-            val traceId = headers[TRACE_ID_HEADER]
-            val spanId = headers[SPAN_ID_HEADER]
-            return if (traceId != null && spanId != null) {
-                TracingParts(false, traceId, spanId)
-            } else null
+            val parts = TracingParts.parse(headers)
+            return if (parts.isEmpty()) null else parts
         }
 
         private fun generateIdsOnPathMatch(path: String, configuration: Configuration) =

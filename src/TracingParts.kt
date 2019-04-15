@@ -95,5 +95,6 @@ data class TracingParts(
         return headers
     }
 
+    fun isEmpty() = traceId == null && spanId == null && parentSpanId == null
 }
 
