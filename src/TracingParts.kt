@@ -1,5 +1,7 @@
 package mjs.ktor.features.zipkin
 
+import io.ktor.http.Headers
+
 const val B3_HEADER = "b3"
 const val TRACE_ID_HEADER = "X-B3-TraceId"
 const val SPAN_ID_HEADER = "X-B3-SpanId"
@@ -18,7 +20,7 @@ enum class Sampled {
     }
 
     companion object {
-        fun parse(sampled: String) = when (sampled) {
+        fun parse(sampled: String?) = when (sampled) {
             "0" -> DENY
             "1" -> ACCEPT
             "d" -> DEBUG
@@ -37,7 +39,7 @@ data class TracingParts(
     val sampled: Sampled = Sampled.DEFER
 ) {
     companion object {
-        fun parse(header: String): TracingParts {
+        fun parseB3Header(header: String): TracingParts {
             val parts = header.split("-")
             return when (parts.size) {
                 1 -> TracingParts(true, sampled = Sampled.parse(parts[0]))
@@ -46,6 +48,19 @@ data class TracingParts(
                 else -> throw B3HeaderParseException("Header 'b3: $header' could not be parsed into parts")
             }
         }
+
+        fun parse(headers: Headers): TracingParts =
+            headers[B3_HEADER]?.let {
+                parseB3Header(it)
+            } ?: TracingParts(
+                false,
+                headers[TRACE_ID_HEADER],
+                headers[SPAN_ID_HEADER],
+                headers[PARENT_SPAN_ID_HEADER],
+                headers[DEBUG_HEADER]?.let {
+                    Sampled.DEBUG
+                } ?: Sampled.parse(headers[SAMPLED_HEADER])
+            )
     }
 
     fun asB3Header(): String {

@@ -2,6 +2,7 @@ package mjs.ktor.features.zipkin
 
 import assertk.assertThat
 import assertk.assertions.isEqualTo
+import io.ktor.http.HeadersBuilder
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
@@ -17,35 +18,107 @@ internal class TracingPartsTest {
 
         @Test
         fun `should parse TTTTT-SSSSS into trace and span IDs`() {
-            assertThat(TracingParts.parse("$traceId-$spanId")).isEqualTo(
+            assertThat(TracingParts.parseB3Header("$traceId-$spanId")).isEqualTo(
                 TracingParts(true, traceId, spanId)
             )
         }
 
         @Test
         fun `should parse TTTTT-SSSSS-S-PPPPP into trace, span and parent span IDs, and sampling`() {
-            assertThat(TracingParts.parse("$traceId-$spanId-0-$parentSpanId")).isEqualTo(
+            assertThat(TracingParts.parseB3Header("$traceId-$spanId-0-$parentSpanId")).isEqualTo(
                 TracingParts(true, traceId, spanId, parentSpanId, Sampled.DENY)
             )
-            assertThat(TracingParts.parse("$traceId-$spanId-1-$parentSpanId")).isEqualTo(
+            assertThat(TracingParts.parseB3Header("$traceId-$spanId-1-$parentSpanId")).isEqualTo(
                 TracingParts(true, traceId, spanId, parentSpanId, Sampled.ACCEPT)
             )
-            assertThat(TracingParts.parse("$traceId-$spanId-d-$parentSpanId")).isEqualTo(
+            assertThat(TracingParts.parseB3Header("$traceId-$spanId-d-$parentSpanId")).isEqualTo(
                 TracingParts(true, traceId, spanId, parentSpanId, Sampled.DEBUG)
             )
         }
 
         @Test
         fun `should parse TTTTT-SSSSS--PPPPP into trace, span and parent span IDs, with default DEFER sampling`() {
-            assertThat(TracingParts.parse("$traceId-$spanId--$parentSpanId")).isEqualTo(
+            assertThat(TracingParts.parseB3Header("$traceId-$spanId--$parentSpanId")).isEqualTo(
                 TracingParts(true, traceId, spanId, parentSpanId, Sampled.DEFER)
             )
         }
 
         @Test
         fun `should parse 0 into DENY sampling`() {
-            assertThat(TracingParts.parse("0")).isEqualTo(
+            assertThat(TracingParts.parseB3Header("0")).isEqualTo(
                 TracingParts(true, null, null, null, Sampled.DENY)
+            )
+        }
+    }
+
+    @Nested
+    inner class MultipleHeaderParsing {
+        @Test
+        fun `should return empty TracingParts if no headers matched`() {
+            assertThat(TracingParts.parse(HeadersBuilder().build())).isEqualTo(
+                TracingParts(false, null, null, null, Sampled.DEFER)
+            )
+        }
+
+        @Test
+        fun `should parse X-B3-TraceId and X-B3-SpanId if only they are present`() {
+            val headers = HeadersBuilder().apply {
+                append(TRACE_ID_HEADER, traceId)
+                append(SPAN_ID_HEADER, spanId)
+            }.build()
+            assertThat(TracingParts.parse(headers)).isEqualTo(
+                TracingParts(false, traceId, spanId)
+            )
+        }
+
+        @Test
+        fun `should parse X-B3-TraceId, X-B3-SpanId and X-B3-ParentSpanId if present`() {
+            val headers = HeadersBuilder().apply {
+                append(TRACE_ID_HEADER, traceId)
+                append(SPAN_ID_HEADER, spanId)
+                append(PARENT_SPAN_ID_HEADER, parentSpanId)
+            }.build()
+            assertThat(TracingParts.parse(headers)).isEqualTo(
+                TracingParts(false, traceId, spanId, parentSpanId, Sampled.DEFER)
+            )
+        }
+
+        @Test
+        fun `should parse X-B3-Sampled = 1 if present`() {
+            val headers = HeadersBuilder().apply {
+                append(TRACE_ID_HEADER, traceId)
+                append(SPAN_ID_HEADER, spanId)
+                append(PARENT_SPAN_ID_HEADER, parentSpanId)
+                append(SAMPLED_HEADER, "1")
+            }.build()
+            assertThat(TracingParts.parse(headers)).isEqualTo(
+                TracingParts(false, traceId, spanId, parentSpanId, Sampled.ACCEPT)
+            )
+        }
+
+        @Test
+        fun `should parse X-B3-Sampled = 0 if present`() {
+            val headers = HeadersBuilder().apply {
+                append(TRACE_ID_HEADER, traceId)
+                append(SPAN_ID_HEADER, spanId)
+                append(PARENT_SPAN_ID_HEADER, parentSpanId)
+                append(SAMPLED_HEADER, "0")
+            }.build()
+            assertThat(TracingParts.parse(headers)).isEqualTo(
+                TracingParts(false, traceId, spanId, parentSpanId, Sampled.DENY)
+            )
+        }
+
+        @Test
+        fun `should parse X-B3-Flags = 1 if present`() {
+            val headers = HeadersBuilder().apply {
+                append(TRACE_ID_HEADER, traceId)
+                append(SPAN_ID_HEADER, spanId)
+                append(PARENT_SPAN_ID_HEADER, parentSpanId)
+                append(DEBUG_HEADER, "1")
+            }.build()
+            assertThat(TracingParts.parse(headers)).isEqualTo(
+                TracingParts(false, traceId, spanId, parentSpanId, Sampled.DEBUG)
             )
         }
     }
