@@ -22,9 +22,12 @@ class ClientIds(val tracingParts: TracingParts) {
 
         override fun install(feature: ClientIds, scope: HttpClient) {
             scope.requestPipeline.intercept(HttpRequestPipeline.State) {
-                setHeaders(context.headers, feature.tracingParts)
+                setHeaders(context.headers, partsForClientCall(feature.tracingParts))
             }
         }
+
+        private fun partsForClientCall(parts: TracingParts): TracingParts =
+            TracingParts(parts.b3Header, parts.traceId, nextId(), parts.spanId, parts.sampled)
 
         private fun setHeaders(headers: HeadersBuilder, tracingParts: TracingParts) {
             tracingParts.asHeaders().forEach { (name, value) ->
