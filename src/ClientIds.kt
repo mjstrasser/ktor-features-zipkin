@@ -27,7 +27,7 @@ class ClientIds(val tracingParts: TracingParts) {
         }
 
         private fun partsForClientCall(parts: TracingParts): TracingParts =
-            TracingParts(parts.b3Header, parts.traceId, nextId(), parts.spanId, parts.sampled)
+            TracingParts(parts.useB3Header, parts.traceId, nextId(), parts.spanId, parts.sampled)
 
         private fun setHeaders(headers: HeadersBuilder, tracingParts: TracingParts) {
             tracingParts.asHeaders().forEach { (name, value) ->

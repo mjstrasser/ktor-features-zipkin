@@ -32,7 +32,7 @@ enum class Sampled {
 class B3HeaderParseException(message: String) : Exception(message)
 
 data class TracingParts(
-    val b3Header: Boolean,
+    val useB3Header: Boolean,
     val traceId: String? = null,
     val spanId: String? = null,
     val parentSpanId: String? = null,
@@ -73,7 +73,7 @@ data class TracingParts(
     }
 
     fun asHeaders(): Map<String, String> {
-        if (b3Header) {
+        if (useB3Header) {
             return mapOf(B3_HEADER to asB3Header())
         }
         val headers = mutableMapOf<String, String>()
