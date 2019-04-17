@@ -44,6 +44,7 @@ data class TracingParts(
             return when (parts.size) {
                 1 -> TracingParts(true, sampled = Sampled.parse(parts[0]))
                 2 -> TracingParts(true, parts[0], parts[1])
+                3 -> TracingParts(true, parts[0], parts[1], null, Sampled.parse(parts[2]))
                 4 -> TracingParts(true, parts[0], parts[1], parts[3], Sampled.parse(parts[2]))
                 else -> throw B3HeaderParseException("Header 'b3: $header' could not be parsed into parts")
             }
@@ -65,7 +66,7 @@ data class TracingParts(
 
     fun asB3Header(): String {
         val parts = listOfNotNull(traceId, spanId, sampled.asHeader(), parentSpanId)
-        return if (parts.size == 3) {
+        return if (parts.size == 3 && parts[2] == "") {
             "$traceId-$spanId"
         } else {
             parts.joinToString("-")
