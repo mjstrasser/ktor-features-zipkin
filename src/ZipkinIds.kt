@@ -122,6 +122,8 @@ val ApplicationCall.tracingParts: TracingParts? get() = attributes.getOrNull(Zip
  */
 const val TRACE_ID_KEY = "traceId"
 const val SPAN_ID_KEY = "spanId"
+const val PARENT_SPAN_ID_KEY = "parentSpanId"
+const val B3_ID = "b3Id"
 
 /**
  * Put the Zipkin IDs into the logging MDC.
@@ -129,4 +131,6 @@ const val SPAN_ID_KEY = "spanId"
 fun CallLogging.Configuration.zipkinMdc() {
     mdc(TRACE_ID_KEY) { it.tracingParts?.traceId }
     mdc(SPAN_ID_KEY) { it.tracingParts?.spanId }
+    mdc(PARENT_SPAN_ID_KEY) { it.tracingParts?.parentSpanId }
+    mdc(B3_ID) { it.tracingParts?.asB3Header() }
 }
