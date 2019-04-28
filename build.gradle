@@ -11,7 +11,7 @@ apply plugin: 'kotlin'
 apply plugin: 'maven'
 
 group 'com.michaelstrasser'
-version '0.1.2'
+version '0.1.3'
 
 sourceSets {
     main.kotlin.srcDirs = [ 'src' ]
