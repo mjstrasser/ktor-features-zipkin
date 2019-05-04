@@ -11,43 +11,19 @@ import io.ktor.response.ApplicationResponse
 import io.ktor.response.header
 import io.ktor.util.AttributeKey
 import io.ktor.util.pipeline.PipelinePhase
-import mjs.ktor.features.zipkin.ZipkinIds.Configuration
-import kotlin.random.Random
-
-private val random = Random(System.nanoTime())
-
-enum class IdLength { ID_64_BITS, ID_128_BITS }
-
-fun nextId(idLength: IdLength = IdLength.ID_64_BITS) = when (idLength) {
-    IdLength.ID_64_BITS -> String.format("%016x", random.nextLong())
-    IdLength.ID_128_BITS -> String.format("%016x%016x", random.nextLong(), random.nextLong())
-}
 
 /**
- * Ktor feature that handles Zipkin headers for trace ID and span ID. It behaves similarly to
- * [Spring Cloud Sleuth](https://spring.io/projects/spring-cloud-sleuth).
- *
- * When the feature is installed, headers are handled as follows:
- *
- * - If the request contains X-B3-TraceId and X-B3-SpanId headers, set the same headers
- *   into the response.
- *
- * - If the request contains a b3 header, set the same header into the response.
- *
- * - If the request does not contain any of these headers and its path begins with
- *   one of the configured prefixes, set new ID values
- *   into either X-B3-TraceId and X-B3-SpanId, or a b3 header, by configuration.
- *
- * @see [Configuration]
+ * Ktor feature that handles Zipkin headers for tracing.
  */
 class ZipkinIds {
 
     /**
-     * Configuration for ZipkinIds.
+     * Configuration for [ZipkinIds].
      *
-     * - [b3Header]: generate `b3` headers instead of `X-B3-TraceId` and `X-B3-SpanId` headers.
-     * - [idLength]: generate either 64-bit (default) or 128-bit trace ID values (@see [IdLength]).
-     * - [initiateTracePathPrefixes]: only generate trace and span ID values if the request path
+     * - [b3Header]: generate `b3` headers instead of separate `X-B3` headers.
+     * - [idLength]: generate either 64-bit (default) or 128-bit trace ID values (@see
+     *   [nextId] and [IdLength]).
+     * - [initiateTracePathPrefixes]: only initiate tracing if the request path
      *   begins with one of the specified prefixes.
      */
     class Configuration {

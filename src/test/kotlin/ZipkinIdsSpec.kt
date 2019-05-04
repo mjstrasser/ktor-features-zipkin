@@ -14,14 +14,6 @@ internal object ZipkinIdsSpec : Spek({
     val traceId by memoized { nextId() }
     val spanId by memoized { nextId() }
 
-    describe("generates IDs") {
-        it("that are 64 bits long by default") {
-            assertThat(nextId()).hasLength(16)
-        }
-        it("that are 128 bits long when specified") {
-            assertThat(nextId(IdLength.ID_128_BITS)).hasLength(32)
-        }
-    }
     describe("matches path prefixes") {
         it("initiates a trace when the path starts with a specified prefix") {
             withTestApplication {
