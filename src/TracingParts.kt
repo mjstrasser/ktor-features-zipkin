@@ -9,6 +9,9 @@ const val PARENT_SPAN_ID_HEADER = "X-B3-ParentSpanId"
 const val SAMPLED_HEADER = "X-B3-Sampled"
 const val DEBUG_HEADER = "X-B3-Flags"
 
+/**
+ * State of trace sampling.
+ */
 enum class Sampled {
     DEFER, DENY, ACCEPT, DEBUG;
 
