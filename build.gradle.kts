@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
-
 buildscript {
     repositories {
         jcenter()
@@ -12,18 +10,7 @@ plugins {
 }
 
 group = "com.michaelstrasser"
-version = "0.1.4"
-
-sourceSets.main {
-    withConvention(KotlinSourceSet::class) {
-        kotlin.srcDirs("src")
-    }
-}
-sourceSets.test {
-    withConvention(KotlinSourceSet::class) {
-        kotlin.srcDirs("test")
-    }
-}
+version = "0.1.5"
 
 repositories {
     jcenter()
