@@ -6,11 +6,12 @@ buildscript {
 
 plugins {
     kotlin("jvm") version "1.3.31"
-    maven
+    `maven-publish`
+    id("com.jfrog.bintray") version "1.8.0"
 }
 
 group = "com.michaelstrasser"
-version = "0.1.6"
+version = "0.2.0"
 
 repositories {
     jcenter()
@@ -48,4 +49,18 @@ dependencies {
 tasks.test {
     useJUnitPlatform()
     dependsOn("cleanTest")
+}
+
+tasks.register<Jar>("sourcesJar") {
+    archiveClassifier.set("sources")
+    from(sourceSets.main.get().allSource)
+}
+
+publishing {
+    publications {
+        create<MavenPublication>("mavenKotlin") {
+            from(components["kotlin"])
+            artifact(tasks["sourcesJar"])
+        }
+    }
 }
