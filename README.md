@@ -79,8 +79,8 @@ fun Application.module() {
 In this example, the feature is installed so it will initiate tracing only for requests starting with
 `"/api"`. 
 
-* Requests to `"/health"` without any tracing headers do not initiate tracing.
-* Requests to `"/api/v1/service` without tracing headers initiate tracing.
+* Requests to `/health` without any tracing headers do not initiate tracing.
+* Requests to `/api/v1/service` without tracing headers initiate tracing.
 * Tracing initiated by the service respond with `b3` headers and use them in client calls.
 * If requests contain tracing headers, those headers and their type (either `b3` or `X-B3-*`) will
   be maintained.
