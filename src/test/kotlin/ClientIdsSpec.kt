@@ -5,7 +5,10 @@ import assertk.assertions.isEqualTo
 import assertk.assertions.isFalse
 import assertk.assertions.isNotEqualTo
 import io.ktor.client.engine.mock.MockEngine
-import io.ktor.client.engine.mock.MockHttpResponse
+import io.ktor.client.engine.mock.MockEngineConfig
+import io.ktor.client.engine.mock.MockRequestHandler
+import io.ktor.client.engine.mock.respond
+import io.ktor.client.request.HttpRequestData
 import io.ktor.client.request.get
 import io.ktor.client.response.HttpResponse
 import io.ktor.client.tests.utils.TestClientBuilder
@@ -13,15 +16,18 @@ import io.ktor.client.tests.utils.clientTest
 import io.ktor.client.tests.utils.config
 import io.ktor.client.tests.utils.test
 import io.ktor.http.HttpStatusCode
+import io.ktor.util.InternalAPI
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.specification.describe
 
+@UseExperimental(InternalAPI::class)
 internal object ClientIdsSpec : Spek({
 
     /** A mock Ktor engine that echoes the headers it receives. */
-    val echoEngine = MockEngine {
-        MockHttpResponse(call = call, status = HttpStatusCode.OK, headers = this.headers)
+    val echoHandler: MockRequestHandler = { request: HttpRequestData ->
+        respond(content = request.body.toString(), status = HttpStatusCode.OK, headers = request.headers)
     }
+    val echoEngine = MockEngine(MockEngineConfig().apply { addHandler(echoHandler) })
 
     /** Configure a client with the specified [TracingParts] instance. */
     fun TestClientBuilder<*>.configParts(parts: TracingParts) {

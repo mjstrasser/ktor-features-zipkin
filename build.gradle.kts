@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 buildscript {
     repositories {
         jcenter()
@@ -11,7 +13,7 @@ plugins {
 }
 
 group = "com.michaelstrasser"
-version = "0.2.0"
+version = "0.2.1"
 
 repositories {
     jcenter()
@@ -20,7 +22,7 @@ repositories {
 
 dependencies {
     val kotlinVersion = "1.3.31"
-    val ktorVersion = "1.1.4"
+    val ktorVersion = "1.2.1"
     val junit5Version = "5.4.0"
     val spekVersion = "2.0.3"
     val assertkVersion = "0.14"
@@ -49,6 +51,10 @@ dependencies {
 tasks.test {
     useJUnitPlatform()
     dependsOn("cleanTest")
+}
+
+tasks.withType<KotlinCompile> {
+    kotlinOptions.freeCompilerArgs = listOf("-Xuse-experimental=kotlin.Experimental")
 }
 
 tasks.register<Jar>("sourcesJar") {

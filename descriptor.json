@@ -19,14 +19,14 @@
     "public_stats": false
   },
   "version": {
-    "name": "0.2.0",
+    "name": "0.2.1",
     "released": "2019-05-08",
     "gpgSign": false
   },
   "files": [
     {
       "includePattern": "build/libs/(.*)",
-      "uploadPattern": "com/michaelstrasser/ktor-features-zipkin/0.2.0/$1"
+      "uploadPattern": "com/michaelstrasser/ktor-features-zipkin/0.2.1/$1"
     }
   ],
   "publish": true
