@@ -13,7 +13,7 @@ plugins {
 }
 
 group = "com.michaelstrasser"
-version = "0.2.1"
+version = "0.2.2"
 
 repositories {
     jcenter()
@@ -23,9 +23,9 @@ repositories {
 dependencies {
     val kotlinVersion = "1.3.31"
     val ktorVersion = "1.2.1"
-    val junit5Version = "5.4.0"
+    val junit5Version = "5.4.2"
     val spekVersion = "2.0.3"
-    val assertkVersion = "0.14"
+    val assertkVersion = "0.17"
 
     implementation(group = "org.jetbrains.kotlin", name = "kotlin-stdlib-jdk8", version = kotlinVersion)
 

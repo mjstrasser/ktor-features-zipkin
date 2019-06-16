@@ -11,6 +11,19 @@ internal object TracingPartsSpec : Spek({
     val spanId by memoized { nextId() }
     val parentSpanId by memoized { nextId() }
 
+    describe("Sampled: as header value") {
+        it("converts DENY to 0") { assertThat(Sampled.DENY.asHeader()).isEqualTo("0") }
+        it("converts ACCEPT to 1") { assertThat(Sampled.ACCEPT.asHeader()).isEqualTo("1") }
+        it("converts DEBUG to d") { assertThat(Sampled.DEBUG.asHeader()).isEqualTo("d") }
+        it("converts anything else to ''") { assertThat(Sampled.DEFER.asHeader()).isEqualTo("") }
+    }
+    describe("Sampled: parses header value") {
+        it("from 0 to DENY") { assertThat(Sampled.parse("0")).isEqualTo(Sampled.DENY) }
+        it("from 1 to ACCEPT") { assertThat(Sampled.parse("1")).isEqualTo(Sampled.ACCEPT) }
+        it("from d to DEBUG") { assertThat(Sampled.parse("d")).isEqualTo(Sampled.DEBUG) }
+        it("from anything else to DEFER") { assertThat(Sampled.parse("X")).isEqualTo(Sampled.DEFER) }
+    }
+
     describe("TracingParts: from HTTP headers") {
         fun headers(
             b3: String? = null,
@@ -59,6 +72,20 @@ internal object TracingPartsSpec : Spek({
                     TracingParts.parse(headers(b3 = "0"))
                 ).isEqualTo(
                     TracingParts(useB3Header = true, sampled = Sampled.DENY)
+                )
+            }
+            it("of value 1 into ACCEPT sampled") {
+                assertThat(
+                    TracingParts.parse(headers(b3 = "1"))
+                ).isEqualTo(
+                    TracingParts(useB3Header = true, sampled = Sampled.ACCEPT)
+                )
+            }
+            it("of value X into DEFER sampled") {
+                assertThat(
+                    TracingParts.parse(headers(b3 = "X"))
+                ).isEqualTo(
+                    TracingParts(useB3Header = true, sampled = Sampled.DEFER)
                 )
             }
         }
