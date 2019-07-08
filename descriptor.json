@@ -3,7 +3,7 @@
     "name": "ktor-features-zipkin",
     "repo": "maven",
     "subject": "mjstrasser",
-    "desc": "Ktor feature for handling Zipkihn tracing IDs",
+    "desc": "Ktor feature for handling Zipkin tracing IDs",
     "website_url": "https://blog.michaelstrasser.com",
     "issue_tracker_url": "https://github.com/mjstrasser/ktor-features-zipkin/issues",
     "vcs_url": "https://github.com/mjstrasser/ktor-features-zipkin.git",
@@ -19,14 +19,14 @@
     "public_stats": false
   },
   "version": {
-    "name": "0.2.1",
-    "released": "2019-06-01",
+    "name": "0.2.3",
+    "released": "2019-07-08",
     "gpgSign": false
   },
   "files": [
     {
       "includePattern": "build/libs/(.*)",
-      "uploadPattern": "com/michaelstrasser/ktor-features-zipkin/0.2.1/$1"
+      "uploadPattern": "com/michaelstrasser/ktor-features-zipkin/0.2.3/$1"
     }
   ],
   "publish": true
