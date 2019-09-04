@@ -6,6 +6,7 @@ before_install:
 before_deploy:
   - ./gradlew generatePomFileForMavenKotlinPublication
 deploy:
+  skip_cleanup: true
   provider: bintray
   file: "descriptor.json"
   user: $BINTRAY_API_USER
