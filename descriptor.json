@@ -25,7 +25,7 @@
   },
   "files": [
     {
-      "includePattern": "build/libs/(.*)",
+      "includePattern": "build/repo/com/michaelstrasser/ktor-features-zipkin/0.2.5/(.*)",
       "uploadPattern": "com/michaelstrasser/ktor-features-zipkin/0.2.5/$1"
     }
   ],

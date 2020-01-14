@@ -69,4 +69,10 @@ publishing {
             artifact(tasks["sourcesJar"])
         }
     }
+    repositories {
+        maven {
+            name = "buildDirRepo"
+            url = uri("file://${buildDir}/repo")
+        }
+    }
 }
