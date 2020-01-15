@@ -149,3 +149,17 @@ They can be set in `logback.xml` like so:
     </appender>
 
 ```
+
+## Gradle dependency
+
+```groovy
+repositories {
+    // ...
+    maven { url 'https://kotlin.bintray.com/ktor' }
+}
+
+dependencies {
+    // ...
+    implementation 'com.michaelstrasser:ktor-features-zipkin:0.2.5'
+}
+```
