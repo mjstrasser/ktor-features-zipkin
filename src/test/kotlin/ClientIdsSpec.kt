@@ -10,17 +10,17 @@ import io.ktor.client.engine.mock.MockRequestHandler
 import io.ktor.client.engine.mock.respond
 import io.ktor.client.request.HttpRequestData
 import io.ktor.client.request.get
-import io.ktor.client.response.HttpResponse
+import io.ktor.client.statement.HttpResponse
 import io.ktor.client.tests.utils.TestClientBuilder
-import io.ktor.client.tests.utils.clientTest
 import io.ktor.client.tests.utils.config
 import io.ktor.client.tests.utils.test
+import io.ktor.client.tests.utils.testWithEngine
 import io.ktor.http.HttpStatusCode
 import io.ktor.util.InternalAPI
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.specification.describe
 
-@UseExperimental(InternalAPI::class)
+@OptIn(InternalAPI::class)
 internal object ClientIdsSpec : Spek({
 
     /** A mock Ktor engine that echoes the headers it receives. */
@@ -44,7 +44,7 @@ internal object ClientIdsSpec : Spek({
     describe("setting headers into client requests") {
         describe("sets b3 header if specified") {
             it("with the received trace ID") {
-                clientTest(echoEngine) {
+                testWithEngine(echoEngine) {
                     configParts(
                         TracingParts(useB3Header = true, traceId = traceId, spanId = spanId)
                     )
@@ -55,7 +55,7 @@ internal object ClientIdsSpec : Spek({
                 }
             }
             it("with a new span ID") {
-                clientTest(echoEngine) {
+                testWithEngine(echoEngine) {
                     configParts(
                         TracingParts(useB3Header = true, traceId = traceId, spanId = spanId)
                     )
@@ -66,7 +66,7 @@ internal object ClientIdsSpec : Spek({
                 }
             }
             it("with parent span ID set to the received span ID") {
-                clientTest(echoEngine) {
+                testWithEngine(echoEngine) {
                     configParts(
                         TracingParts(useB3Header = true, traceId = traceId, spanId = spanId)
                     )
@@ -77,7 +77,7 @@ internal object ClientIdsSpec : Spek({
                 }
             }
             it("with sampled as received") {
-                clientTest(echoEngine) {
+                testWithEngine(echoEngine) {
                     configParts(
                         TracingParts(useB3Header = true, traceId = traceId, spanId = spanId, sampled = Sampled.ACCEPT)
                     )
@@ -90,7 +90,7 @@ internal object ClientIdsSpec : Spek({
         }
         describe("sets separate headers if specified") {
             it("with the received trace ID") {
-                clientTest(echoEngine) {
+                testWithEngine(echoEngine) {
                     configParts(
                         TracingParts(useB3Header = false, traceId = traceId, spanId = spanId)
                     )
@@ -101,7 +101,7 @@ internal object ClientIdsSpec : Spek({
                 }
             }
             it("with a new span ID") {
-                clientTest(echoEngine) {
+                testWithEngine(echoEngine) {
                     configParts(
                         TracingParts(useB3Header = false, traceId = traceId, spanId = spanId)
                     )
@@ -112,7 +112,7 @@ internal object ClientIdsSpec : Spek({
                 }
             }
             it("with parent span ID set to the received span ID") {
-                clientTest(echoEngine) {
+                testWithEngine(echoEngine) {
                     configParts(
                         TracingParts(useB3Header = false, traceId = traceId, spanId = spanId)
                     )
@@ -123,7 +123,7 @@ internal object ClientIdsSpec : Spek({
                 }
             }
             it("with sampled set to 1 when ACCEPT received") {
-                clientTest(echoEngine) {
+                testWithEngine(echoEngine) {
                     configParts(
                         TracingParts(useB3Header = false, traceId = traceId, spanId = spanId, sampled = Sampled.ACCEPT)
                     )
@@ -134,7 +134,7 @@ internal object ClientIdsSpec : Spek({
                 }
             }
             it("with sampled set to 0 when DENY received") {
-                clientTest(echoEngine) {
+                testWithEngine(echoEngine) {
                     configParts(
                         TracingParts(useB3Header = false, traceId = traceId, spanId = spanId, sampled = Sampled.DENY)
                     )
@@ -145,7 +145,7 @@ internal object ClientIdsSpec : Spek({
                 }
             }
             it("with flags set to 1 when DEBUG received") {
-                clientTest(echoEngine) {
+                testWithEngine(echoEngine) {
                     configParts(
                         TracingParts(useB3Header = false, traceId = traceId, spanId = spanId, sampled = Sampled.DEBUG)
                     )

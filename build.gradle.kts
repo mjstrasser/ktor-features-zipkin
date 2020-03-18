@@ -7,13 +7,13 @@ buildscript {
 }
 
 plugins {
-    kotlin("jvm") version "1.3.61"
+    kotlin("jvm") version "1.3.70"
     `maven-publish`
     id("com.jfrog.bintray") version "1.8.4"
 }
 
 group = "com.michaelstrasser"
-version = "0.2.5"
+version = "0.2.6"
 
 repositories {
     jcenter()
@@ -21,11 +21,11 @@ repositories {
 }
 
 dependencies {
-    val kotlinVersion = "1.3.61"
-    val ktorVersion = "1.2.6"
-    val junit5Version = "5.5.2"
+    val kotlinVersion = "1.3.70"
+    val ktorVersion = "1.3.2"
+    val junit5Version = "5.6.0"
     val spekVersion = "2.0.9"
-    val assertkVersion = "0.20"
+    val assertkVersion = "0.22"
 
     implementation(group = "org.jetbrains.kotlin", name = "kotlin-stdlib-jdk8", version = kotlinVersion)
 
