@@ -156,6 +156,7 @@ They can be set in `logback.xml` like so:
 repositories {
     // ...
     maven { url 'https://kotlin.bintray.com/ktor' }
+    maven { url 'https://dl.bintray.com/mjstrasser/maven'}
 }
 
 dependencies {
