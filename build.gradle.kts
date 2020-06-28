@@ -7,13 +7,13 @@ buildscript {
 }
 
 plugins {
-    kotlin("jvm") version "1.3.70"
+    kotlin("jvm") version "1.3.72"
     `maven-publish`
     id("com.jfrog.bintray") version "1.8.4"
 }
 
 group = "com.michaelstrasser"
-version = "0.2.6"
+version = "0.2.7"
 
 repositories {
     jcenter()
@@ -21,9 +21,9 @@ repositories {
 }
 
 dependencies {
-    val kotlinVersion = "1.3.70"
+    val kotlinVersion = "1.3.72"
     val ktorVersion = "1.3.2"
-    val junit5Version = "5.6.0"
+    val junit5Version = "5.6.2"
     val spekVersion = "2.0.9"
     val assertkVersion = "0.22"
 
@@ -46,6 +46,7 @@ dependencies {
     testImplementation(kotlin(module = "reflect", version = kotlinVersion))
     testImplementation(group = "org.spekframework.spek2", name = "spek-dsl-jvm", version = spekVersion)
     testRuntimeOnly(group = "org.spekframework.spek2", name = "spek-runner-junit5", version = spekVersion)
+    implementation(kotlin("stdlib-jdk8"))
 }
 
 tasks.test {
@@ -75,4 +76,13 @@ publishing {
             url = uri("file://${buildDir}/repo")
         }
     }
+}
+
+val compileKotlin: KotlinCompile by tasks
+compileKotlin.kotlinOptions {
+    jvmTarget = "1.8"
+}
+val compileTestKotlin: KotlinCompile by tasks
+compileTestKotlin.kotlinOptions {
+    jvmTarget = "1.8"
 }

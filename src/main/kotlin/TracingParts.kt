@@ -13,7 +13,7 @@ const val DEBUG_HEADER = "X-B3-Flags"
  * State of trace sampling.
  */
 enum class Sampled {
-    DEFER, DENY, ACCEPT, DEBUG;
+    DENY, ACCEPT, DEBUG, DEFER;
 
     fun asHeader(): String = when (this) {
         DENY -> "0"

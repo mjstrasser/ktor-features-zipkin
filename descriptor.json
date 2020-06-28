@@ -19,14 +19,14 @@
     "public_stats": false
   },
   "version": {
-    "name": "0.2.6",
+    "name": "0.2.7",
     "released": "2020-03-18",
     "gpgSign": false
   },
   "files": [
     {
-      "includePattern": "build/repo/com/michaelstrasser/ktor-features-zipkin/0.2.6/(.*)",
-      "uploadPattern": "com/michaelstrasser/ktor-features-zipkin/0.2.6/$1"
+      "includePattern": "build/repo/com/michaelstrasser/ktor-features-zipkin/0.2.7/(.*)",
+      "uploadPattern": "com/michaelstrasser/ktor-features-zipkin/0.2.7/$1"
     }
   ],
   "publish": true
