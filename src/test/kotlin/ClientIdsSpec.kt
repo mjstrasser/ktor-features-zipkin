@@ -27,7 +27,6 @@ internal object ClientIdsSpec : Spek({
     val echoHandler: MockRequestHandler = { request: HttpRequestData ->
         respond(content = request.body.toString(), status = HttpStatusCode.OK, headers = request.headers)
     }
-    val echoEngine = MockEngine(MockEngineConfig().apply { addHandler(echoHandler) })
 
     /** Configure a client with the specified [TracingParts] instance. */
     fun TestClientBuilder<*>.configParts(parts: TracingParts) {
@@ -40,6 +39,7 @@ internal object ClientIdsSpec : Spek({
 
     val traceId by memoized { nextId() }
     val spanId by memoized { nextId() }
+    val echoEngine by memoized { MockEngine(MockEngineConfig().apply { addHandler(echoHandler) }) }
 
     describe("setting headers into client requests") {
         describe("sets b3 header if specified") {

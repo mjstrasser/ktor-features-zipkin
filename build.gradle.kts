@@ -6,14 +6,20 @@ buildscript {
     }
 }
 
+val kotlinVersion = "1.4.10"
+val ktorVersion = "1.4.1"
+val junit5Version = "5.6.2"
+val spekVersion = "2.0.9"
+val assertkVersion = "0.22"
+
 plugins {
-    kotlin("jvm") version "1.3.72"
+    kotlin("jvm") version "1.4.10"
     `maven-publish`
     id("com.jfrog.bintray") version "1.8.4"
 }
 
 group = "com.michaelstrasser"
-version = "0.2.7"
+version = "0.2.8"
 
 repositories {
     jcenter()
@@ -21,12 +27,6 @@ repositories {
 }
 
 dependencies {
-    val kotlinVersion = "1.3.72"
-    val ktorVersion = "1.3.2"
-    val junit5Version = "5.6.2"
-    val spekVersion = "2.0.9"
-    val assertkVersion = "0.22"
-
     implementation(group = "org.jetbrains.kotlin", name = "kotlin-stdlib-jdk8", version = kotlinVersion)
 
     implementation(group = "io.ktor", name = "ktor-server-core", version = ktorVersion)
