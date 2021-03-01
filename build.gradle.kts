@@ -6,20 +6,20 @@ buildscript {
     }
 }
 
-val kotlinVersion = "1.4.10"
-val ktorVersion = "1.4.1"
-val junit5Version = "5.6.2"
-val spekVersion = "2.0.9"
-val assertkVersion = "0.22"
+val kotlinVersion: String by project
+val ktorVersion: String by project
+val junit5Version: String by project
+val spekVersion: String by project
+val assertkVersion: String by project
 
 plugins {
     kotlin("jvm") version "1.4.10"
     `maven-publish`
-    id("com.jfrog.bintray") version "1.8.4"
+    id("com.jfrog.bintray") version "1.8.5"
 }
 
 group = "com.michaelstrasser"
-version = "0.2.8"
+version = "0.2.9"
 
 repositories {
     jcenter()
@@ -36,6 +36,7 @@ dependencies {
     testImplementation(group = "io.ktor", name = "ktor-client-mock", version = ktorVersion)
     testImplementation(group = "io.ktor", name = "ktor-client-mock-jvm", version = ktorVersion)
     testImplementation(group = "io.ktor", name = "ktor-server-tests", version = ktorVersion)
+    testImplementation(group = "io.ktor", name = "ktor-client-tests", version = ktorVersion)
 
     testImplementation(group = "org.junit.jupiter", name = "junit-jupiter-api", version = junit5Version)
     testRuntimeOnly(group = "org.junit.jupiter", name = "junit-jupiter-engine", version = junit5Version)
@@ -46,7 +47,6 @@ dependencies {
     testImplementation(kotlin(module = "reflect", version = kotlinVersion))
     testImplementation(group = "org.spekframework.spek2", name = "spek-dsl-jvm", version = spekVersion)
     testRuntimeOnly(group = "org.spekframework.spek2", name = "spek-runner-junit5", version = spekVersion)
-    implementation(kotlin("stdlib-jdk8"))
 }
 
 tasks.test {
