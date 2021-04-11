@@ -13,13 +13,13 @@ val spekVersion: String by project
 val assertkVersion: String by project
 
 plugins {
-    kotlin("jvm") version "1.4.10"
+    kotlin("jvm") version "1.4.32"
     `maven-publish`
     id("com.jfrog.bintray") version "1.8.5"
 }
 
 group = "com.michaelstrasser"
-version = "0.2.9"
+version = "0.2.10"
 
 repositories {
     jcenter()
