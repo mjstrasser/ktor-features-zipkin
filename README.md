@@ -1,6 +1,6 @@
 # Ktor: ZipkinIds feature 
 
-[![Build Status](https://travis-ci.org/mjstrasser/ktor-features-zipkin.svg?branch=master)](https://travis-ci.org/mjstrasser/ktor-features-zipkin)
+[![Build Status](https://travis-ci.org/mjstrasser/ktor-features-zipkin.svg?branch=main)](https://travis-ci.org/mjstrasser/ktor-features-zipkin)
 
 A [Ktor](https://ktor.io) installable feature for particiapting in [Zipkin](https://zipkin.io)
 distributed tracing.
