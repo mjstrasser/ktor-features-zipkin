@@ -14,6 +14,7 @@ val assertkVersion: String by project
 
 plugins {
     kotlin("jvm") version "1.4.32"
+    signing
     `maven-publish`
     id("com.jfrog.bintray") version "1.8.5"
 }
@@ -49,6 +50,15 @@ dependencies {
     testRuntimeOnly(group = "org.spekframework.spek2", name = "spek-runner-junit5", version = spekVersion)
 }
 
+val compileKotlin: KotlinCompile by tasks
+compileKotlin.kotlinOptions {
+    jvmTarget = "1.8"
+}
+val compileTestKotlin: KotlinCompile by tasks
+compileTestKotlin.kotlinOptions {
+    jvmTarget = "1.8"
+}
+
 tasks.test {
     useJUnitPlatform()
     dependsOn("cleanTest")
@@ -68,6 +78,26 @@ publishing {
         create<MavenPublication>("mavenKotlin") {
             from(components["kotlin"])
             artifact(tasks["sourcesJar"])
+            pom {
+                name.set("ktor-features-zipkin")
+                description.set("Ktor feature for OpenZipkin tracing IDs")
+                url.set("https://github.com/mjstrasser/ktor-features-zipkin")
+                licenses {
+                    name.set("The Apache License, Version 2.0")
+                    url.set("https://www.apache.org/licenses/LICENSE-2.0.txt")
+                }
+                developers {
+                    developer {
+                        id.set("mjstrasser")
+                        name.set("Michael Strasser")
+                        email.set("code@michaelstrasser.com")
+                    }
+                }
+                scm {
+                    connection.set("scm:git:git://github.com/mjstrasser/ktor-features-zipkin.git")
+                    url.set("https://github.com/mjstrasser/ktor-features-zipkin")
+                }
+            }
         }
     }
     repositories {
@@ -78,11 +108,10 @@ publishing {
     }
 }
 
-val compileKotlin: KotlinCompile by tasks
-compileKotlin.kotlinOptions {
-    jvmTarget = "1.8"
-}
-val compileTestKotlin: KotlinCompile by tasks
-compileTestKotlin.kotlinOptions {
-    jvmTarget = "1.8"
+signing {
+    val signingKeyId: String? by project
+    val signingKey: String? by project
+    val signingPassword: String? by project
+    useInMemoryPgpKeys(signingKeyId, signingKey, signingPassword)
+    sign(publishing.publications["mavenKotlin"])
 }
