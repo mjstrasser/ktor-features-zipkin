@@ -16,15 +16,13 @@ plugins {
     kotlin("jvm") version "1.4.32"
     signing
     `maven-publish`
-    id("com.jfrog.bintray") version "1.8.5"
 }
 
 group = "com.michaelstrasser"
 version = "0.2.10"
 
 repositories {
-    jcenter()
-    maven("https://dl.bintray.com/kotlin/ktor")
+    mavenCentral()
 }
 
 dependencies {
@@ -100,10 +98,20 @@ publishing {
             }
         }
     }
+    val ossrhUsername: String? by project
+    val ossrhPassword: String? by project
     repositories {
         maven {
             name = "buildDirRepo"
             url = uri("file://${buildDir}/repo")
+        }
+        maven {
+            name = "sonatypeRepo"
+            url = uri("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
+            credentials {
+                username = ossrhUsername
+                password = ossrhPassword
+            }
         }
     }
 }
