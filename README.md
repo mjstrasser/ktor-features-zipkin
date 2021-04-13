@@ -1,5 +1,7 @@
 # Ktor: ZipkinIds feature 
 
+[![Maven Central](https://img.shields.io/maven-central/v/com.michaelstrasser/ktor-features-zipkin.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22com.michaelstrasser%22%20AND%20a:%22ktor-features-zipkin%22)
+
 A [Ktor](https://ktor.io) installable feature for particiapting in [Zipkin](https://zipkin.io)
 distributed tracing.
 
