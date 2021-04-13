@@ -1,5 +1,6 @@
 # Ktor: ZipkinIds feature 
 
+[![Build and Publish](https://github.com/mjstrasser/ktor-features-zipkin/actions/workflows/build-publish.yml/badge.svg)](https://github.com/mjstrasser/ktor-features-zipkin/actions/workflows/build-publish.yml)
 [![Maven Central](https://img.shields.io/maven-central/v/com.michaelstrasser/ktor-features-zipkin.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22com.michaelstrasser%22%20AND%20a:%22ktor-features-zipkin%22)
 
 A [Ktor](https://ktor.io) installable feature for particiapting in [Zipkin](https://zipkin.io)
@@ -156,11 +157,11 @@ They can be set in `logback.xml` like so:
 repositories {
     // ...
     maven { url 'https://kotlin.bintray.com/ktor' }
-    maven { url 'https://dl.bintray.com/mjstrasser/maven'}
+    mavenCentral()
 }
 
 dependencies {
     // ...
-    implementation 'com.michaelstrasser:ktor-features-zipkin:0.2.11'
+    implementation 'com.michaelstrasser:ktor-features-zipkin:0.2.12'
 }
 ```
