@@ -159,6 +159,6 @@ repositories {
 
 dependencies {
     // ...
-    implementation 'com.michaelstrasser:ktor-features-zipkin:0.2.10'
+    implementation 'com.michaelstrasser:ktor-features-zipkin:0.2.11'
 }
 ```

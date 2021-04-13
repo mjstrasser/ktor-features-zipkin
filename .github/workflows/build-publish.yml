@@ -2,11 +2,11 @@ name: Build and publish library
 
 on:
   push:
-    branches: [main]
+    branches: [ main ]
     paths-ignore:
       - README.md
   pull_request:
-    branches: [main]
+    branches: [ main ]
     paths-ignore:
       - README.md
 
@@ -30,8 +30,8 @@ jobs:
       - name: Generate KDoc
         run: ./gradlew dokkaHtml
 
-      - name: Publish to Sonatype repository
-        run: ./gradlew publishMavenKotlinPublicationToSonatypeRepository
+      - name: Publish to Sonatype repository and release
+        run: ./gradlew publishToSonatype closeAndReleaseSonatypeStagingRepository
         env:
           ORG_GRADLE_PROJECT_signingKey: ${{ secrets.SIGNING_KEY }}
           ORG_GRADLE_PROJECT_signingKeyId: ${{ secrets.SIGNING_KEY_ID }}

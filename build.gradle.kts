@@ -13,10 +13,11 @@ plugins {
     id("org.jetbrains.dokka") version "1.4.30"
     signing
     `maven-publish`
+    id("io.github.gradle-nexus.publish-plugin") version "1.0.0"
 }
 
 group = "com.michaelstrasser"
-version = "0.2.10"
+version = "0.2.11"
 
 repositories {
     mavenCentral()
@@ -120,20 +121,17 @@ publishing {
             }
         }
     }
+}
+
+nexusPublishing {
     val ossrhUsername: String? by project
     val ossrhPassword: String? by project
     repositories {
-        maven {
-            name = "buildDir"
-            url = uri("file://${buildDir}/repo")
-        }
-        maven {
-            name = "sonatype"
-            url = uri("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
-            credentials {
-                username = ossrhUsername
-                password = ossrhPassword
-            }
+        create("sonatype") {
+            nexusUrl.set(uri("https://s01.oss.sonatype.org/service/local/"))
+            snapshotRepositoryUrl.set(uri("https://s01.oss.sonatype.org/content/repositories/snapshots/"))
+            username.set(ossrhUsername)
+            password.set(ossrhPassword)
         }
     }
 }
