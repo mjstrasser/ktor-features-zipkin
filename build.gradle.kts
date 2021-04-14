@@ -4,9 +4,7 @@ import java.net.URL
 
 val kotlinVersion: String by project
 val ktorVersion: String by project
-val junit5Version: String by project
-val spekVersion: String by project
-val assertkVersion: String by project
+val kotestVersion: String by project
 
 plugins {
     kotlin("jvm") version "1.4.32"
@@ -17,7 +15,7 @@ plugins {
 }
 
 group = "com.michaelstrasser"
-version = "0.2.12"
+version = "0.2.13-SNAPSHOT"
 
 repositories {
     mavenCentral()
@@ -37,15 +35,9 @@ dependencies {
     testImplementation(group = "io.ktor", name = "ktor-server-tests", version = ktorVersion)
     testImplementation(group = "io.ktor", name = "ktor-client-tests", version = ktorVersion)
 
-    testImplementation(group = "org.junit.jupiter", name = "junit-jupiter-api", version = junit5Version)
-    testRuntimeOnly(group = "org.junit.jupiter", name = "junit-jupiter-engine", version = junit5Version)
-
-    testImplementation(group = "com.willowtreeapps.assertk", name = "assertk-jvm", version = assertkVersion)
-
-    // Override the version in Spek.
-    testImplementation(kotlin(module = "reflect", version = kotlinVersion))
-    testImplementation(group = "org.spekframework.spek2", name = "spek-dsl-jvm", version = spekVersion)
-    testRuntimeOnly(group = "org.spekframework.spek2", name = "spek-runner-junit5", version = spekVersion)
+    testImplementation("io.kotest:kotest-runner-junit5:$kotestVersion")
+    testImplementation("io.kotest:kotest-assertions-core:$kotestVersion")
+    testImplementation("io.kotest:kotest-property:$kotestVersion")
 }
 
 val compileKotlin: KotlinCompile by tasks

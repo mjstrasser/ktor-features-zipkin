@@ -1,18 +1,15 @@
 package mjs.ktor.features.zipkin
 
-import assertk.assertThat
-import assertk.assertions.*
+import io.kotest.core.spec.style.DescribeSpec
+import io.kotest.matchers.shouldBe
+import io.kotest.matchers.shouldNotBe
 import io.ktor.application.install
 import io.ktor.http.HttpMethod
 import io.ktor.server.testing.handleRequest
 import io.ktor.server.testing.withTestApplication
 import mjs.ktor.features.zipkin.ZipkinIds.Feature.tracingPartsKey
-import org.spekframework.spek2.Spek
-import org.spekframework.spek2.style.specification.describe
 
-internal object ZipkinIdsSpec : Spek({
-    val traceId by memoized { nextId() }
-    val spanId by memoized { nextId() }
+class ZipkinIdsSpec : DescribeSpec({
 
     describe("matches path prefixes") {
         it("initiates a trace when the path starts with a specified prefix") {
@@ -21,7 +18,7 @@ internal object ZipkinIdsSpec : Spek({
                     initiateTracePathPrefixes = arrayOf("/api/v1", "/api/v3")
                 }
                 handleRequest(HttpMethod.Post, "/api/v1/service").apply {
-                    assertThat(request.call.attributes.contains(tracingPartsKey)).isTrue()
+                    request.call.attributes.contains(tracingPartsKey) shouldBe true
                 }
             }
         }
@@ -31,10 +28,10 @@ internal object ZipkinIdsSpec : Spek({
                     initiateTracePathPrefixes = arrayOf("/api/v1", "/api/v3")
                 }
                 handleRequest(HttpMethod.Post, "/health").apply {
-                    assertThat(request.call.attributes.contains(tracingPartsKey)).isFalse()
+                    request.call.attributes.contains(tracingPartsKey) shouldBe false
                 }
                 handleRequest(HttpMethod.Post, "/api/v2").apply {
-                    assertThat(request.call.attributes.contains(tracingPartsKey)).isFalse()
+                    request.call.attributes.contains(tracingPartsKey) shouldBe false
                 }
             }
         }
@@ -44,34 +41,38 @@ internal object ZipkinIdsSpec : Spek({
             withTestApplication {
                 handleRequest(HttpMethod.Get, "/").apply {
                     with(response.headers) {
-                        assertThat(get(B3_HEADER)).isNull()
-                        assertThat(get(TRACE_ID_HEADER)).isNull()
-                        assertThat(get(SPAN_ID_HEADER)).isNull()
-                        assertThat(get(PARENT_SPAN_ID_HEADER)).isNull()
-                        assertThat(get(SAMPLED_HEADER)).isNull()
-                        assertThat(get(DEBUG_HEADER)).isNull()
+                        get(B3_HEADER) shouldBe null
+                        get(TRACE_ID_HEADER) shouldBe null
+                        get(SPAN_ID_HEADER) shouldBe null
+                        get(PARENT_SPAN_ID_HEADER) shouldBe null
+                        get(SAMPLED_HEADER) shouldBe null
+                        get(DEBUG_HEADER) shouldBe null
                     }
                 }
             }
         }
         it("returns a b3 header if present in request") {
+            val traceId = nextId()
+            val spanId = nextId()
             withTestApplication {
                 application.install(ZipkinIds)
                 handleRequest(HttpMethod.Get, "/") {
                     addHeader(B3_HEADER, "$traceId-$spanId")
                 }.apply {
                     with(response.headers) {
-                        assertThat(get(B3_HEADER)).isEqualTo("$traceId-$spanId")
-                        assertThat(get(TRACE_ID_HEADER)).isNull()
-                        assertThat(get(SPAN_ID_HEADER)).isNull()
-                        assertThat(get(PARENT_SPAN_ID_HEADER)).isNull()
-                        assertThat(get(SAMPLED_HEADER)).isNull()
-                        assertThat(get(DEBUG_HEADER)).isNull()
+                        get(B3_HEADER) shouldBe "$traceId-$spanId"
+                        get(TRACE_ID_HEADER) shouldBe null
+                        get(SPAN_ID_HEADER) shouldBe null
+                        get(PARENT_SPAN_ID_HEADER) shouldBe null
+                        get(SAMPLED_HEADER) shouldBe null
+                        get(DEBUG_HEADER) shouldBe null
                     }
                 }
             }
         }
         it("returns X-B3-TraceId and X-B3-SpanId headers if present in request") {
+            val traceId = nextId()
+            val spanId = nextId()
             withTestApplication {
                 application.install(ZipkinIds)
                 handleRequest(HttpMethod.Get, "/") {
@@ -79,12 +80,12 @@ internal object ZipkinIdsSpec : Spek({
                     addHeader(SPAN_ID_HEADER, spanId)
                 }.apply {
                     with(response.headers) {
-                        assertThat(get(B3_HEADER)).isNull()
-                        assertThat(get(TRACE_ID_HEADER)).isEqualTo(traceId)
-                        assertThat(get(SPAN_ID_HEADER)).isEqualTo(spanId)
-                        assertThat(get(PARENT_SPAN_ID_HEADER)).isNull()
-                        assertThat(get(SAMPLED_HEADER)).isNull()
-                        assertThat(get(DEBUG_HEADER)).isNull()
+                        get(B3_HEADER) shouldBe null
+                        get(TRACE_ID_HEADER) shouldBe traceId
+                        get(SPAN_ID_HEADER) shouldBe spanId
+                        get(PARENT_SPAN_ID_HEADER) shouldBe null
+                        get(SAMPLED_HEADER) shouldBe null
+                        get(DEBUG_HEADER) shouldBe null
                     }
                 }
             }
@@ -94,25 +95,29 @@ internal object ZipkinIdsSpec : Spek({
         it("does not set the attribute if the feature is not installed") {
             withTestApplication {
                 handleRequest(HttpMethod.Get, "/").apply {
-                    assertThat(request.call.attributes.getOrNull(tracingPartsKey)).isNull()
+                    request.call.attributes.getOrNull(tracingPartsKey) shouldBe null
                 }
             }
         }
         it("sets the the attribute if a b3 header is present in request") {
+            val traceId = nextId()
+            val spanId = nextId()
             withTestApplication {
                 application.install(ZipkinIds)
                 handleRequest(HttpMethod.Get, "/") {
                     addHeader(B3_HEADER, "$traceId-$spanId")
                 }.apply {
                     request.call.attributes[tracingPartsKey].let { attribute ->
-                        assertThat(attribute.traceId).isEqualTo(traceId)
-                        assertThat(attribute.spanId).isEqualTo(spanId)
+                        attribute.traceId shouldBe traceId
+                        attribute.spanId shouldBe spanId
 
                     }
                 }
             }
         }
         it("sets the the attribute if X-B3-TraceId and X-B3-SpanId headers are present in request") {
+            val traceId = nextId()
+            val spanId = nextId()
             withTestApplication {
                 application.install(ZipkinIds)
                 handleRequest(HttpMethod.Get, "/") {
@@ -120,8 +125,8 @@ internal object ZipkinIdsSpec : Spek({
                     addHeader(SPAN_ID_HEADER, spanId)
                 }.apply {
                     request.call.attributes[tracingPartsKey].let { attribute ->
-                        assertThat(attribute.traceId).isEqualTo(traceId)
-                        assertThat(attribute.spanId).isEqualTo(spanId)
+                        attribute.traceId shouldBe traceId
+                        attribute.spanId shouldBe spanId
 
                     }
                 }
@@ -135,14 +140,14 @@ internal object ZipkinIdsSpec : Spek({
                     initiateTracePathPrefixes = arrayOf("/api")
                 }
                 handleRequest(HttpMethod.Get, "/").apply {
-                    assertThat(request.call.attributes.getOrNull(tracingPartsKey)).isNull()
+                    request.call.attributes.getOrNull(tracingPartsKey) shouldBe null
                     with(response.headers) {
-                        assertThat(get(B3_HEADER)).isNull()
-                        assertThat(get(TRACE_ID_HEADER)).isNull()
-                        assertThat(get(SPAN_ID_HEADER)).isNull()
-                        assertThat(get(PARENT_SPAN_ID_HEADER)).isNull()
-                        assertThat(get(SAMPLED_HEADER)).isNull()
-                        assertThat(get(DEBUG_HEADER)).isNull()
+                        get(B3_HEADER) shouldBe null
+                        get(TRACE_ID_HEADER) shouldBe null
+                        get(SPAN_ID_HEADER) shouldBe null
+                        get(PARENT_SPAN_ID_HEADER) shouldBe null
+                        get(SAMPLED_HEADER) shouldBe null
+                        get(DEBUG_HEADER) shouldBe null
                     }
                 }
             }
@@ -155,12 +160,12 @@ internal object ZipkinIdsSpec : Spek({
                     }
                     handleRequest(HttpMethod.Get, "/").apply {
                         with(response.headers) {
-                            assertThat(get(B3_HEADER)).isNull()
-                            assertThat(get(TRACE_ID_HEADER)).isNotNull()
-                            assertThat(get(SPAN_ID_HEADER)).isNotNull()
-                            assertThat(get(PARENT_SPAN_ID_HEADER)).isNull()
-                            assertThat(get(SAMPLED_HEADER)).isNull()
-                            assertThat(get(DEBUG_HEADER)).isNull()
+                            get(B3_HEADER) shouldBe null
+                            get(TRACE_ID_HEADER) shouldNotBe null
+                            get(SPAN_ID_HEADER) shouldNotBe null
+                            get(PARENT_SPAN_ID_HEADER) shouldBe null
+                            get(SAMPLED_HEADER) shouldBe null
+                            get(DEBUG_HEADER) shouldBe null
                         }
                     }
                 }
@@ -173,12 +178,12 @@ internal object ZipkinIdsSpec : Spek({
                     }
                     handleRequest(HttpMethod.Get, "/").apply {
                         with(response.headers) {
-                            assertThat(get(B3_HEADER)).isNotNull()
-                            assertThat(get(TRACE_ID_HEADER)).isNull()
-                            assertThat(get(SPAN_ID_HEADER)).isNull()
-                            assertThat(get(PARENT_SPAN_ID_HEADER)).isNull()
-                            assertThat(get(SAMPLED_HEADER)).isNull()
-                            assertThat(get(DEBUG_HEADER)).isNull()
+                            get(B3_HEADER) shouldNotBe null
+                            get(TRACE_ID_HEADER) shouldBe null
+                            get(SPAN_ID_HEADER) shouldBe null
+                            get(PARENT_SPAN_ID_HEADER) shouldBe null
+                            get(SAMPLED_HEADER) shouldBe null
+                            get(DEBUG_HEADER) shouldBe null
                         }
                     }
                 }
@@ -188,7 +193,7 @@ internal object ZipkinIdsSpec : Spek({
                 withTestApplication {
                     application.install(ZipkinIds)
                     handleRequest(HttpMethod.Get, "/").apply {
-                        assertThat(request.call.attributes.getOrNull(tracingPartsKey)).isNotNull()
+                        request.call.attributes.getOrNull(tracingPartsKey) shouldNotBe null
                     }
                 }
 
