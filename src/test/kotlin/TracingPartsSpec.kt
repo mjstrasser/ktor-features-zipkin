@@ -5,6 +5,11 @@ import io.kotest.matchers.shouldBe
 import io.ktor.http.HeadersBuilder
 
 class TracingPartsSpec : DescribeSpec({
+
+    data class Setup(val traceId: String, val spanId: String, val parentSpanId: String)
+
+    fun setup() = Setup(nextId(), nextId(), nextId())
+
     describe("Sampled: as header value") {
         it("converts DENY to 0") { Sampled.DENY.asHeader() shouldBe "0" }
         it("converts ACCEPT to 1") { Sampled.ACCEPT.asHeader() shouldBe "1" }
@@ -38,8 +43,7 @@ class TracingPartsSpec : DescribeSpec({
 
         describe("parses b3 headers") {
             it("of form TTTTT-SSSSS into trace and span IDs") {
-                val traceId = nextId()
-                val spanId = nextId()
+                val (traceId, spanId, _) = setup()
                 TracingParts.parse(
                     headers(b3 = "$traceId-$spanId")
                 ) shouldBe TracingParts(
@@ -47,8 +51,7 @@ class TracingPartsSpec : DescribeSpec({
                 )
             }
             it("of form TTTTT-SSSSS-S into trace and span IDs and sampled") {
-                val traceId = nextId()
-                val spanId = nextId()
+                val (traceId, spanId, _) = setup()
                 TracingParts.parse(
                     headers(b3 = "$traceId-$spanId-1")
                 ) shouldBe TracingParts(
@@ -56,9 +59,7 @@ class TracingPartsSpec : DescribeSpec({
                 )
             }
             it("of form TTTTT-SSSSS--PPPPP into trace, span and parent span IDs, with default DEFER sampled") {
-                val traceId = nextId()
-                val spanId = nextId()
-                val parentSpanId = nextId()
+                val (traceId, spanId, parentSpanId) = setup()
                 TracingParts.parse(
                     headers(b3 = "$traceId-$spanId--$parentSpanId")
                 ) shouldBe TracingParts(
@@ -97,8 +98,7 @@ class TracingPartsSpec : DescribeSpec({
                 )
             }
             it("parses X-B3-TraceId and X-B3-SpanId if only they are present") {
-                val traceId = nextId()
-                val spanId = nextId()
+                val (traceId, spanId, _) = setup()
                 TracingParts.parse(
                     headers(traceId = traceId, spanId = spanId)
                 ) shouldBe TracingParts(
@@ -106,9 +106,7 @@ class TracingPartsSpec : DescribeSpec({
                 )
             }
             it("parses X-B3-TraceId, X-B3-SpanId and X-B3-ParentSpanId if they are present") {
-                val traceId = nextId()
-                val spanId = nextId()
-                val parentSpanId = nextId()
+                val (traceId, spanId, parentSpanId) = setup()
                 TracingParts.parse(
                     headers(traceId = traceId, spanId = spanId, parentSpanId = parentSpanId)
                 ) shouldBe TracingParts(
@@ -141,8 +139,7 @@ class TracingPartsSpec : DescribeSpec({
     describe("TracingParts: to HTTP headers") {
         describe("creates b3 header") {
             it("of form TTTTT-SSSSS from only trace and span IDs") {
-                val traceId = nextId()
-                val spanId = nextId()
+                val (traceId, spanId, _) = setup()
                 TracingParts(
                     useB3Header = true, traceId = traceId, spanId = spanId
                 ).asHeaders() shouldBe mapOf(
@@ -150,8 +147,7 @@ class TracingPartsSpec : DescribeSpec({
                 )
             }
             it("of form TTTTT-SSSSS-S from trace and span IDs and sampled") {
-                val traceId = nextId()
-                val spanId = nextId()
+                val (traceId, spanId, _) = setup()
                 TracingParts(
                     useB3Header = true, traceId = traceId,
                     spanId = spanId, sampled = Sampled.ACCEPT
@@ -160,18 +156,14 @@ class TracingPartsSpec : DescribeSpec({
                 )
             }
             it("of form TTTTT-SSSSS-S-PPPPP from trace, span and parent span IDs and sampled") {
-                val traceId = nextId()
-                val spanId = nextId()
-                val parentSpanId = nextId()
+                val (traceId, spanId, parentSpanId) = setup()
                 TracingParts(
                     useB3Header = true, traceId = traceId, spanId = spanId,
                     parentSpanId = parentSpanId, sampled = Sampled.DENY
                 ).asHeaders() shouldBe mapOf("b3" to "$traceId-$spanId-0-$parentSpanId")
             }
             it("of form TTTTT-SSSSS--PPPPP from trace, span and parent span IDs and default DEFER sampled") {
-                val traceId = nextId()
-                val spanId = nextId()
-                val parentSpanId = nextId()
+                val (traceId, spanId, parentSpanId) = setup()
                 TracingParts(
                     useB3Header = true, traceId = traceId, spanId = spanId,
                     parentSpanId = parentSpanId, sampled = Sampled.DEFER
@@ -185,17 +177,14 @@ class TracingPartsSpec : DescribeSpec({
         }
         describe("creates multiple headers") {
             it("X-B3-TraceId and X-B3-SpanId if only those values are set") {
-                val traceId = nextId()
-                val spanId = nextId()
+                val (traceId, spanId, _) = setup()
                 TracingParts(useB3Header = false, traceId = traceId, spanId = spanId).asHeaders() shouldBe mapOf(
                     TRACE_ID_HEADER to traceId,
                     SPAN_ID_HEADER to spanId
                 )
             }
             it("X-B3-TraceId, X-B3-SpanId, X-B3-ParentSpanId and X-B3-Sampled if all are set") {
-                val traceId = nextId()
-                val spanId = nextId()
-                val parentSpanId = nextId()
+                val (traceId, spanId, parentSpanId) = setup()
                 TracingParts(
                     useB3Header = false, traceId = traceId, spanId = spanId,
                     parentSpanId = parentSpanId, sampled = Sampled.ACCEPT
@@ -205,9 +194,7 @@ class TracingPartsSpec : DescribeSpec({
                 )
             }
             it("X-B3-TraceId, X-B3-SpanId and X-B3-ParentSpanId if they are set (DEFER sampled)") {
-                val traceId = nextId()
-                val spanId = nextId()
-                val parentSpanId = nextId()
+                val (traceId, spanId, parentSpanId) = setup()
                 TracingParts(
                     useB3Header = false, traceId = traceId, spanId = spanId,
                     parentSpanId = parentSpanId, sampled = Sampled.DEFER
@@ -217,9 +204,7 @@ class TracingPartsSpec : DescribeSpec({
                 )
             }
             it("X-B3-TraceId, X-B3-SpanId, X-B3-ParentSpanId and X-B3-Flags if all are set") {
-                val traceId = nextId()
-                val spanId = nextId()
-                val parentSpanId = nextId()
+                val (traceId, spanId, parentSpanId) = setup()
                 TracingParts(
                     useB3Header = false, traceId = traceId, spanId = spanId,
                     parentSpanId = parentSpanId, sampled = Sampled.DEBUG

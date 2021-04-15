@@ -11,6 +11,10 @@ import mjs.ktor.features.zipkin.ZipkinIds.Feature.tracingPartsKey
 
 class ZipkinIdsSpec : DescribeSpec({
 
+    data class Setup(val traceId: String, val spanId: String, val parentSpanId: String)
+
+    fun setup() = Setup(nextId(), nextId(), nextId())
+
     describe("matches path prefixes") {
         it("initiates a trace when the path starts with a specified prefix") {
             withTestApplication {
@@ -52,8 +56,7 @@ class ZipkinIdsSpec : DescribeSpec({
             }
         }
         it("returns a b3 header if present in request") {
-            val traceId = nextId()
-            val spanId = nextId()
+            val (traceId, spanId, _) = setup()
             withTestApplication {
                 application.install(ZipkinIds)
                 handleRequest(HttpMethod.Get, "/") {
@@ -71,8 +74,7 @@ class ZipkinIdsSpec : DescribeSpec({
             }
         }
         it("returns X-B3-TraceId and X-B3-SpanId headers if present in request") {
-            val traceId = nextId()
-            val spanId = nextId()
+            val (traceId, spanId, _) = setup()
             withTestApplication {
                 application.install(ZipkinIds)
                 handleRequest(HttpMethod.Get, "/") {
@@ -100,8 +102,7 @@ class ZipkinIdsSpec : DescribeSpec({
             }
         }
         it("sets the the attribute if a b3 header is present in request") {
-            val traceId = nextId()
-            val spanId = nextId()
+            val (traceId, spanId, _) = setup()
             withTestApplication {
                 application.install(ZipkinIds)
                 handleRequest(HttpMethod.Get, "/") {
@@ -116,8 +117,7 @@ class ZipkinIdsSpec : DescribeSpec({
             }
         }
         it("sets the the attribute if X-B3-TraceId and X-B3-SpanId headers are present in request") {
-            val traceId = nextId()
-            val spanId = nextId()
+            val (traceId, spanId, _) = setup()
             withTestApplication {
                 application.install(ZipkinIds)
                 handleRequest(HttpMethod.Get, "/") {

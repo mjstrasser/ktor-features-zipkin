@@ -20,10 +20,14 @@ import io.ktor.util.InternalAPI
 @OptIn(InternalAPI::class)
 class ClientIdsSpec : DescribeSpec({
 
+    data class Setup(val traceId: String, val spanId: String, val echoEngine: MockEngine)
+
     /** A mock Ktor engine that echoes the headers it receives. */
     val echoHandler: MockRequestHandler = { request: HttpRequestData ->
         respond(content = request.body.toString(), status = HttpStatusCode.OK, headers = request.headers)
     }
+
+    fun setup() = Setup(nextId(), nextId(), MockEngine(MockEngineConfig().apply { addHandler(echoHandler) }))
 
     /** Configure a client with the specified [TracingParts] instance. */
     fun TestClientBuilder<*>.configParts(parts: TracingParts) {
@@ -37,9 +41,7 @@ class ClientIdsSpec : DescribeSpec({
     describe("setting headers into client requests") {
         describe("sets b3 header if specified") {
             it("with the received trace ID") {
-                val traceId = nextId()
-                val spanId = nextId()
-                val echoEngine = MockEngine(MockEngineConfig().apply { addHandler(echoHandler) })
+                val (traceId, spanId, echoEngine) = setup()
                 testWithEngine(echoEngine) {
                     configParts(
                         TracingParts(useB3Header = true, traceId = traceId, spanId = spanId)
@@ -51,9 +53,7 @@ class ClientIdsSpec : DescribeSpec({
                 }
             }
             it("with a new span ID") {
-                val traceId = nextId()
-                val spanId = nextId()
-                val echoEngine = MockEngine(MockEngineConfig().apply { addHandler(echoHandler) })
+                val (traceId, spanId, echoEngine) = setup()
                 testWithEngine(echoEngine) {
                     configParts(
                         TracingParts(useB3Header = true, traceId = traceId, spanId = spanId)
@@ -65,9 +65,7 @@ class ClientIdsSpec : DescribeSpec({
                 }
             }
             it("with parent span ID set to the received span ID") {
-                val traceId = nextId()
-                val spanId = nextId()
-                val echoEngine = MockEngine(MockEngineConfig().apply { addHandler(echoHandler) })
+                val (traceId, spanId, echoEngine) = setup()
                 testWithEngine(echoEngine) {
                     configParts(
                         TracingParts(useB3Header = true, traceId = traceId, spanId = spanId)
@@ -79,9 +77,7 @@ class ClientIdsSpec : DescribeSpec({
                 }
             }
             it("with sampled as received") {
-                val traceId = nextId()
-                val spanId = nextId()
-                val echoEngine = MockEngine(MockEngineConfig().apply { addHandler(echoHandler) })
+                val (traceId, spanId, echoEngine) = setup()
                 testWithEngine(echoEngine) {
                     configParts(
                         TracingParts(useB3Header = true, traceId = traceId, spanId = spanId, sampled = Sampled.ACCEPT)
@@ -95,9 +91,7 @@ class ClientIdsSpec : DescribeSpec({
         }
         describe("sets separate headers if specified") {
             it("with the received trace ID") {
-                val traceId = nextId()
-                val spanId = nextId()
-                val echoEngine = MockEngine(MockEngineConfig().apply { addHandler(echoHandler) })
+                val (traceId, spanId, echoEngine) = setup()
                 testWithEngine(echoEngine) {
                     configParts(
                         TracingParts(useB3Header = false, traceId = traceId, spanId = spanId)
@@ -109,9 +103,7 @@ class ClientIdsSpec : DescribeSpec({
                 }
             }
             it("with a new span ID") {
-                val traceId = nextId()
-                val spanId = nextId()
-                val echoEngine = MockEngine(MockEngineConfig().apply { addHandler(echoHandler) })
+                val (traceId, spanId, echoEngine) = setup()
                 testWithEngine(echoEngine) {
                     configParts(
                         TracingParts(useB3Header = false, traceId = traceId, spanId = spanId)
@@ -123,9 +115,7 @@ class ClientIdsSpec : DescribeSpec({
                 }
             }
             it("with parent span ID set to the received span ID") {
-                val traceId = nextId()
-                val spanId = nextId()
-                val echoEngine = MockEngine(MockEngineConfig().apply { addHandler(echoHandler) })
+                val (traceId, spanId, echoEngine) = setup()
                 testWithEngine(echoEngine) {
                     configParts(
                         TracingParts(useB3Header = false, traceId = traceId, spanId = spanId)
@@ -137,9 +127,7 @@ class ClientIdsSpec : DescribeSpec({
                 }
             }
             it("with sampled set to 1 when ACCEPT received") {
-                val traceId = nextId()
-                val spanId = nextId()
-                val echoEngine = MockEngine(MockEngineConfig().apply { addHandler(echoHandler) })
+                val (traceId, spanId, echoEngine) = setup()
                 testWithEngine(echoEngine) {
                     configParts(
                         TracingParts(useB3Header = false, traceId = traceId, spanId = spanId, sampled = Sampled.ACCEPT)
@@ -151,9 +139,7 @@ class ClientIdsSpec : DescribeSpec({
                 }
             }
             it("with sampled set to 0 when DENY received") {
-                val traceId = nextId()
-                val spanId = nextId()
-                val echoEngine = MockEngine(MockEngineConfig().apply { addHandler(echoHandler) })
+                val (traceId, spanId, echoEngine) = setup()
                 testWithEngine(echoEngine) {
                     configParts(
                         TracingParts(useB3Header = false, traceId = traceId, spanId = spanId, sampled = Sampled.DENY)
@@ -165,9 +151,7 @@ class ClientIdsSpec : DescribeSpec({
                 }
             }
             it("with flags set to 1 when DEBUG received") {
-                val traceId = nextId()
-                val spanId = nextId()
-                val echoEngine = MockEngine(MockEngineConfig().apply { addHandler(echoHandler) })
+                val (traceId, spanId, echoEngine) = setup()
                 testWithEngine(echoEngine) {
                     configParts(
                         TracingParts(useB3Header = false, traceId = traceId, spanId = spanId, sampled = Sampled.DEBUG)
