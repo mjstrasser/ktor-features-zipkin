@@ -38,6 +38,7 @@ dependencies {
     testImplementation("io.kotest:kotest-runner-junit5:$kotestVersion")
     testImplementation("io.kotest:kotest-assertions-core:$kotestVersion")
     testImplementation("io.kotest:kotest-property:$kotestVersion")
+    testImplementation("io.kotest:kotest-extensions-junitxml:$kotestVersion")
 }
 
 val compileKotlin: KotlinCompile by tasks
@@ -52,6 +53,7 @@ compileTestKotlin.kotlinOptions {
 tasks.test {
     useJUnitPlatform()
     dependsOn("cleanTest")
+    systemProperty("gradle.build.dir", project.buildDir)
 }
 
 tasks.withType<KotlinCompile> {
