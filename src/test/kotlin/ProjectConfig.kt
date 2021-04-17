@@ -6,7 +6,7 @@ import io.kotest.extensions.junitxml.JunitXmlReporter
 class ProjectConfig : AbstractProjectConfig() {
     override fun listeners() = listOf(
         JunitXmlReporter(
-            includeContainers = true,
+            includeContainers = false,
             useTestPathAsName = true,
             outputDir = "test-results/kotest"
         )
