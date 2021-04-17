@@ -38,7 +38,7 @@ class ClientIdsSpec : DescribeSpec({
         }
     }
 
-    describe("setting headers into client requests") {
+    describe("`ClientIds` feature: setting headers into client requests") {
         describe("sets b3 header if specified") {
             it("with the received trace ID") {
                 val (traceId, spanId, echoEngine) = setup()

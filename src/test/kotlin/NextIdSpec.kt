@@ -4,7 +4,7 @@ import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.string.shouldHaveLength
 
 class NextIdSpec : DescribeSpec({
-    describe("generates IDs") {
+    describe("`nextId()`: generates IDs") {
         it("that are 64 bits long by default") {
             nextId() shouldHaveLength 16
         }
