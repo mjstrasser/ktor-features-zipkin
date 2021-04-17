@@ -8,6 +8,7 @@ class ProjectConfig : AbstractProjectConfig() {
         JunitXmlReporter(
             includeContainers = true,
             useTestPathAsName = true,
+            outputDir = "test-results/kotest"
         )
     )
 }

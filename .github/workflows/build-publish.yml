@@ -32,7 +32,7 @@ jobs:
         if: success() || failure()
         with:
           name: Test results
-          path: build/test-results/test/*.xml
+          path: build/test-results/kotest/*.xml
           reporter: java-junit
 
       - name: Generate KDoc

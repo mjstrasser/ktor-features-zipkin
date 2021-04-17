@@ -24,16 +24,16 @@ repositories {
 }
 
 dependencies {
-    implementation(group = "org.jetbrains.kotlin", name = "kotlin-stdlib-jdk8", version = kotlinVersion)
+    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion")
 
-    implementation(group = "io.ktor", name = "ktor-server-core", version = ktorVersion)
-    implementation(group = "io.ktor", name = "ktor-client-core", version = ktorVersion)
-    implementation(group = "io.ktor", name = "ktor-client-core-jvm", version = ktorVersion)
+    implementation("io.ktor:ktor-server-core:$ktorVersion")
+    implementation("io.ktor:ktor-client-core:$ktorVersion")
+    implementation("io.ktor:ktor-client-core-jvm:$ktorVersion")
 
-    testImplementation(group = "io.ktor", name = "ktor-client-mock", version = ktorVersion)
-    testImplementation(group = "io.ktor", name = "ktor-client-mock-jvm", version = ktorVersion)
-    testImplementation(group = "io.ktor", name = "ktor-server-tests", version = ktorVersion)
-    testImplementation(group = "io.ktor", name = "ktor-client-tests", version = ktorVersion)
+    testImplementation("io.ktor:ktor-client-mock:$ktorVersion")
+    testImplementation("io.ktor:ktor-client-mock-jvm:$ktorVersion")
+    testImplementation("io.ktor:ktor-server-tests:$ktorVersion")
+    testImplementation("io.ktor:ktor-client-tests:$ktorVersion")
 
     testImplementation("io.kotest:kotest-runner-junit5:$kotestVersion")
     testImplementation("io.kotest:kotest-assertions-core:$kotestVersion")
@@ -52,7 +52,6 @@ compileTestKotlin.kotlinOptions {
 
 tasks.test {
     useJUnitPlatform()
-    dependsOn("cleanTest")
     systemProperty("gradle.build.dir", project.buildDir)
 }
 
