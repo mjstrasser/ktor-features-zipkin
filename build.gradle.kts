@@ -7,15 +7,15 @@ val ktorVersion: String by project
 val kotestVersion: String by project
 
 plugins {
-    kotlin("jvm") version "1.4.32"
-    id("org.jetbrains.dokka") version "1.4.30"
+    kotlin("jvm") version "1.5.20"
+    id("org.jetbrains.dokka") version "1.4.32"
     signing
     `maven-publish`
     id("io.github.gradle-nexus.publish-plugin") version "1.0.0"
 }
 
 group = "com.michaelstrasser"
-version = "0.2.13-SNAPSHOT"
+version = "0.2.14-SNAPSHOT"
 
 repositories {
     mavenCentral()
