@@ -7,7 +7,7 @@ val ktorVersion: String by project
 val kotestVersion: String by project
 
 plugins {
-    kotlin("jvm") version "1.8.0"
+    kotlin("jvm") version "1.8.10"
     id("org.jetbrains.dokka") version "1.8.10"
     signing
     `maven-publish`
@@ -15,7 +15,7 @@ plugins {
 }
 
 group = "com.michaelstrasser"
-version = "0.2.14-SNAPSHOT"
+version = "0.2.15-SNAPSHOT"
 
 repositories {
     mavenCentral()
