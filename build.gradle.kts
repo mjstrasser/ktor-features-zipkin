@@ -7,8 +7,8 @@ val ktorVersion: String by project
 val kotestVersion: String by project
 
 plugins {
-    kotlin("jvm") version "1.5.20"
-    id("org.jetbrains.dokka") version "1.4.32"
+    kotlin("jvm") version "1.8.0"
+    id("org.jetbrains.dokka") version "1.8.10"
     signing
     `maven-publish`
     id("io.github.gradle-nexus.publish-plugin") version "1.0.0"
@@ -29,6 +29,7 @@ dependencies {
     implementation("io.ktor:ktor-server-core:$ktorVersion")
     implementation("io.ktor:ktor-client-core:$ktorVersion")
     implementation("io.ktor:ktor-client-core-jvm:$ktorVersion")
+    implementation("io.ktor:ktor-server-call-logging:$ktorVersion")
 
     testImplementation("io.ktor:ktor-client-mock:$ktorVersion")
     testImplementation("io.ktor:ktor-client-mock-jvm:$ktorVersion")
@@ -53,10 +54,6 @@ compileTestKotlin.kotlinOptions {
 tasks.test {
     useJUnitPlatform()
     systemProperty("gradle.build.dir", project.buildDir)
-}
-
-tasks.withType<KotlinCompile> {
-    kotlinOptions.freeCompilerArgs = listOf("-Xuse-experimental=kotlin.Experimental")
 }
 
 tasks.withType<DokkaTask>().configureEach {
