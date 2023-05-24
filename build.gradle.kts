@@ -15,7 +15,7 @@ plugins {
 }
 
 group = "com.michaelstrasser"
-version = "0.2.15-SNAPSHOT"
+version = "0.2.15"
 
 repositories {
     mavenCentral()

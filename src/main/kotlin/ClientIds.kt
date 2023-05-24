@@ -1,7 +1,7 @@
 package mjs.ktor.features.zipkin
 
 import io.ktor.client.HttpClient
-import io.ktor.client.plugins.*
+import io.ktor.client.plugins.HttpClientPlugin
 import io.ktor.client.request.HttpRequestPipeline
 import io.ktor.http.HeadersBuilder
 import io.ktor.util.AttributeKey
@@ -31,9 +31,9 @@ class ClientIds(val tracingParts: TracingParts) {
 
         override fun prepare(block: Configuration.() -> Unit): ClientIds = Configuration().apply(block).build()
 
-        override fun install(feature: ClientIds, scope: HttpClient) {
+        override fun install(plugin: ClientIds, scope: HttpClient) {
             scope.requestPipeline.intercept(HttpRequestPipeline.State) {
-                setHeaders(context.headers, partsForClientCall(feature.tracingParts))
+                setHeaders(context.headers, partsForClientCall(plugin.tracingParts))
             }
         }
 

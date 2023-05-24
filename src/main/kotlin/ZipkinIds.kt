@@ -1,12 +1,17 @@
 package mjs.ktor.features.zipkin
 
 import io.ktor.http.Headers
-import io.ktor.server.application.*
-import io.ktor.server.plugins.callloging.*
-import io.ktor.server.request.*
-import io.ktor.server.response.*
+import io.ktor.server.application.ApplicationCall
+import io.ktor.server.application.ApplicationCallPipeline
+import io.ktor.server.application.BaseApplicationPlugin
+import io.ktor.server.application.call
+import io.ktor.server.plugins.callloging.CallLoggingConfig
+import io.ktor.server.request.path
+import io.ktor.server.response.ApplicationResponse
+import io.ktor.server.response.header
 import io.ktor.util.AttributeKey
 import io.ktor.util.pipeline.PipelinePhase
+
 /**
  * Ktor feature that handles Zipkin headers for tracing.
  */

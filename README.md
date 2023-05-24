@@ -3,7 +3,7 @@
 [![Build and Publish](https://github.com/mjstrasser/ktor-features-zipkin/actions/workflows/build-publish.yml/badge.svg)](https://github.com/mjstrasser/ktor-features-zipkin/actions/workflows/build-publish.yml)
 [![Maven Central](https://img.shields.io/maven-central/v/com.michaelstrasser/ktor-features-zipkin.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22com.michaelstrasser%22%20AND%20a:%22ktor-features-zipkin%22)
 
-A [Ktor](https://ktor.io) installable feature for particiapting in [Zipkin](https://zipkin.io)
+A [Ktor](https://ktor.io) installable plugin (formerly called feature) for particiapting in [Zipkin](https://zipkin.io)
 distributed tracing.
 
 ## Why might you want this?
