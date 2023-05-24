@@ -1,17 +1,12 @@
 package mjs.ktor.features.zipkin
 
-import io.ktor.application.ApplicationCall
-import io.ktor.application.ApplicationCallPipeline
-import io.ktor.application.ApplicationFeature
-import io.ktor.application.call
-import io.ktor.features.CallLogging
 import io.ktor.http.Headers
-import io.ktor.request.path
-import io.ktor.response.ApplicationResponse
-import io.ktor.response.header
+import io.ktor.server.application.*
+import io.ktor.server.plugins.callloging.*
+import io.ktor.server.request.*
+import io.ktor.server.response.*
 import io.ktor.util.AttributeKey
 import io.ktor.util.pipeline.PipelinePhase
-
 /**
  * Ktor feature that handles Zipkin headers for tracing.
  */
@@ -35,11 +30,11 @@ class ZipkinIds {
     /**
      * Installable feature for [ZipkinIds].
      */
-    companion object Feature : ApplicationFeature<ApplicationCallPipeline, Configuration, ZipkinIds> {
+    companion object Plugin : BaseApplicationPlugin<ApplicationCallPipeline, Configuration, ZipkinIds> {
 
         val tracingPartsKey = AttributeKey<TracingParts>("tracingParts")
 
-        override val key = AttributeKey<ZipkinIds>("ZipkinIds")
+        override val key: AttributeKey<ZipkinIds> = AttributeKey("ZipkinIds")
 
         /**
          * Phase of [ApplicationCallPipeline] into which the feature is installed.
@@ -48,7 +43,8 @@ class ZipkinIds {
 
         override fun install(pipeline: ApplicationCallPipeline, configure: Configuration.() -> Unit): ZipkinIds {
             val configuration = Configuration().apply(configure)
-            val instance = ZipkinIds()
+            val feature = ZipkinIds()
+
             pipeline.insertPhaseBefore(ApplicationCallPipeline.Setup, phase)
 
             pipeline.intercept(phase) {
@@ -63,7 +59,7 @@ class ZipkinIds {
                 }
             }
 
-            return instance
+            return feature
         }
 
         private fun readIdsFromRequest(headers: Headers): TracingParts? {
@@ -104,7 +100,7 @@ const val B3_ID = "b3Id"
 /**
  * Put the Zipkin IDs into the logging MDC.
  */
-fun CallLogging.Configuration.zipkinMdc() {
+fun CallLoggingConfig.zipkinMdc() {
     mdc(TRACE_ID_KEY) { it.tracingParts?.traceId }
     mdc(SPAN_ID_KEY) { it.tracingParts?.spanId }
     mdc(PARENT_SPAN_ID_KEY) { it.tracingParts?.parentSpanId }

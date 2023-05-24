@@ -9,15 +9,12 @@ import io.ktor.client.engine.mock.MockRequestHandler
 import io.ktor.client.engine.mock.respond
 import io.ktor.client.request.HttpRequestData
 import io.ktor.client.request.get
-import io.ktor.client.statement.HttpResponse
 import io.ktor.client.tests.utils.TestClientBuilder
 import io.ktor.client.tests.utils.config
 import io.ktor.client.tests.utils.test
 import io.ktor.client.tests.utils.testWithEngine
 import io.ktor.http.HttpStatusCode
-import io.ktor.util.InternalAPI
 
-@OptIn(InternalAPI::class)
 class ClientIdsSpec : DescribeSpec({
 
     data class Setup(val traceId: String, val spanId: String, val echoEngine: MockEngine)
@@ -47,7 +44,7 @@ class ClientIdsSpec : DescribeSpec({
                         TracingParts(useB3Header = true, traceId = traceId, spanId = spanId)
                     )
                     test { client ->
-                        val headers = client.get<HttpResponse>().headers
+                        val headers = client.get("").headers
                         headers[B3_HEADER]!!.split("-")[0] shouldBe traceId
                     }
                 }
@@ -59,7 +56,7 @@ class ClientIdsSpec : DescribeSpec({
                         TracingParts(useB3Header = true, traceId = traceId, spanId = spanId)
                     )
                     test { client ->
-                        val headers = client.get<HttpResponse>().headers
+                        val headers = client.get("").headers
                         headers[B3_HEADER]!!.split("-")[1] shouldNotBe spanId
                     }
                 }
@@ -71,7 +68,7 @@ class ClientIdsSpec : DescribeSpec({
                         TracingParts(useB3Header = true, traceId = traceId, spanId = spanId)
                     )
                     test { client ->
-                        val headers = client.get<HttpResponse>().headers
+                        val headers = client.get("").headers
                         headers[B3_HEADER]!!.split("-")[3] shouldBe spanId
                     }
                 }
@@ -83,7 +80,7 @@ class ClientIdsSpec : DescribeSpec({
                         TracingParts(useB3Header = true, traceId = traceId, spanId = spanId, sampled = Sampled.ACCEPT)
                     )
                     test { client ->
-                        val headers = client.get<HttpResponse>().headers
+                        val headers = client.get("").headers
                         headers[B3_HEADER]!!.split("-")[2] shouldBe "1"
                     }
                 }
@@ -97,7 +94,7 @@ class ClientIdsSpec : DescribeSpec({
                         TracingParts(useB3Header = false, traceId = traceId, spanId = spanId)
                     )
                     test { client ->
-                        val headers = client.get<HttpResponse>().headers
+                        val headers = client.get("").headers
                         headers[TRACE_ID_HEADER] shouldBe traceId
                     }
                 }
@@ -109,7 +106,7 @@ class ClientIdsSpec : DescribeSpec({
                         TracingParts(useB3Header = false, traceId = traceId, spanId = spanId)
                     )
                     test { client ->
-                        val headers = client.get<HttpResponse>().headers
+                        val headers = client.get("").headers
                         headers[SPAN_ID_HEADER] shouldNotBe spanId
                     }
                 }
@@ -121,7 +118,7 @@ class ClientIdsSpec : DescribeSpec({
                         TracingParts(useB3Header = false, traceId = traceId, spanId = spanId)
                     )
                     test { client ->
-                        val headers = client.get<HttpResponse>().headers
+                        val headers = client.get("").headers
                         headers[PARENT_SPAN_ID_HEADER] shouldBe spanId
                     }
                 }
@@ -133,7 +130,7 @@ class ClientIdsSpec : DescribeSpec({
                         TracingParts(useB3Header = false, traceId = traceId, spanId = spanId, sampled = Sampled.ACCEPT)
                     )
                     test { client ->
-                        val headers = client.get<HttpResponse>().headers
+                        val headers = client.get("").headers
                         headers[SAMPLED_HEADER] shouldBe "1"
                     }
                 }
@@ -145,7 +142,7 @@ class ClientIdsSpec : DescribeSpec({
                         TracingParts(useB3Header = false, traceId = traceId, spanId = spanId, sampled = Sampled.DENY)
                     )
                     test { client ->
-                        val headers = client.get<HttpResponse>().headers
+                        val headers = client.get("").headers
                         headers[SAMPLED_HEADER] shouldBe "0"
                     }
                 }
@@ -157,7 +154,7 @@ class ClientIdsSpec : DescribeSpec({
                         TracingParts(useB3Header = false, traceId = traceId, spanId = spanId, sampled = Sampled.DEBUG)
                     )
                     test { client ->
-                        val headers = client.get<HttpResponse>().headers
+                        val headers = client.get("").headers
                         headers.contains(SAMPLED_HEADER) shouldBe false
                         headers[DEBUG_HEADER] shouldBe "1"
                     }

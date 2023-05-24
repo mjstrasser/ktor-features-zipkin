@@ -3,11 +3,11 @@ package mjs.ktor.features.zipkin
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
-import io.ktor.application.install
 import io.ktor.http.HttpMethod
+import io.ktor.server.application.*
 import io.ktor.server.testing.handleRequest
 import io.ktor.server.testing.withTestApplication
-import mjs.ktor.features.zipkin.ZipkinIds.Feature.tracingPartsKey
+import mjs.ktor.features.zipkin.ZipkinIds.Plugin.tracingPartsKey
 
 class ZipkinIdsSpec : DescribeSpec({
 

@@ -1,7 +1,7 @@
 package mjs.ktor.features.zipkin
 
 import io.ktor.client.HttpClient
-import io.ktor.client.features.HttpClientFeature
+import io.ktor.client.plugins.*
 import io.ktor.client.request.HttpRequestPipeline
 import io.ktor.http.HeadersBuilder
 import io.ktor.util.AttributeKey
@@ -25,7 +25,7 @@ class ClientIds(val tracingParts: TracingParts) {
     /**
      * Installable feature of [ClientIds].
      */
-    companion object Feature : HttpClientFeature<Configuration, ClientIds> {
+    companion object Feature : HttpClientPlugin<Configuration, ClientIds> {
 
         override val key: AttributeKey<ClientIds> = AttributeKey("ClientIds")
 
